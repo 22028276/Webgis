@@ -1,0 +1,1373 @@
+[
+  {
+    "id": 11776,
+    "name": "Quảng Ninh/Quang Hanh , Vietnam",
+    "geo": [
+      21.009555,
+      107.232036
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 11777,
+    "name": "Quảng Ninh/UBND phường Mạo Khê , Vietnam",
+    "geo": [
+      21.0585079,
+      106.5979359
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 11778,
+    "name": "Quảng Ninh/UBND TP Uông Bí, Vietnam",
+    "geo": [
+      21.0357507,
+      106.7641068
+    ],
+    "aqi": "-",
+    "time": "2025-05-29 14:00:00"
+  },
+  {
+    "id": 11779,
+    "name": "Quảng Ninh/Phương Nam , Vietnam",
+    "geo": [
+      21.0201158,
+      106.7004633
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 11780,
+    "name": "Quảng Ninh/Nam Cầu Trắng , Vietnam",
+    "geo": [
+      20.9454412,
+      107.1306708
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 11781,
+    "name": "Quảng Ninh/Yên Mỹ , Vietnam",
+    "geo": [
+      21.0390377,
+      107.0284572
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 11782,
+    "name": "Quảng Ninh/Thành ủy Móng Cái , Vietnam",
+    "geo": [
+      21.5242055,
+      107.9650363
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 12488,
+    "name": "Thừa Thiên Huế/83 Hùng Vương, Vietnam",
+    "geo": [
+      16.46226,
+      107.596351
+    ],
+    "aqi": 20,
+    "time": "2025-08-01 09:00:00"
+  },
+  {
+    "id": 12957,
+    "name": "Bắc Ninh/Khu liên cơ Thuận Thành, Vietnam",
+    "geo": [
+      21.0272212,
+      106.0342099
+    ],
+    "aqi": 10,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 12958,
+    "name": "Bắc Ninh/Phong Cốc, Vietnam",
+    "geo": [
+      21.1232473,
+      106.2883295
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 12960,
+    "name": "Bắc Ninh/Phù Xá - Văn Môn, Vietnam",
+    "geo": [
+      21.1638526,
+      105.9235646
+    ],
+    "aqi": 26,
+    "time": "2025-07-21 12:00:00"
+  },
+  {
+    "id": 12961,
+    "name": "Bắc Ninh/TT Quan trắc - phường Suối Hoa - TP Bắc Ninh, Vietnam",
+    "geo": [
+      21.1873402,
+      106.0742958
+    ],
+    "aqi": 19,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 12963,
+    "name": "Bắc Ninh/UBND QUẾ VÕ, Vietnam",
+    "geo": [
+      21.1518069,
+      106.1518796
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 12964,
+    "name": "Bắc Ninh/UBND Yên Phong, Vietnam",
+    "geo": [
+      21.2003445,
+      105.9485439
+    ],
+    "aqi": "-",
+    "time": "2025-07-17 18:00:00"
+  },
+  {
+    "id": 12965,
+    "name": "Bắc Ninh/UBND Đại Đồng, Vietnam",
+    "geo": [
+      21.089142,
+      105.990311
+    ],
+    "aqi": 19,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 12976,
+    "name": "Bắc Ninh/Châu Khê, Vietnam",
+    "geo": [
+      21.1137452,
+      105.9268934
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13014,
+    "name": "Hà Nội/Mầm non Kim Liên, Vietnam",
+    "geo": [
+      21.0072,
+      105.83572
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13015,
+    "name": "Hà Nội/Trụ sở Công an P .Hàng Mã, Vietnam",
+    "geo": [
+      21.03982,
+      105.84726
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13017,
+    "name": "Hà Nội/Tòa nhà quản lý Hồ Thành Công, Vietnam",
+    "geo": [
+      21.02022,
+      105.81232
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13018,
+    "name": "Hà Nội/UBND P .Hoàng Văn Thụ - Hoàng Mai, Vietnam",
+    "geo": [
+      20.98832,
+      105.854897
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13019,
+    "name": "Hà Nội/UBND P. Mỹ Đình I, Vietnam",
+    "geo": [
+      21.01994,
+      105.77056
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13020,
+    "name": "Hà Nội/UBND P.Tây Mỗ, Nam Từ Liêm, Vietnam",
+    "geo": [
+      21.00577,
+      105.74842
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13027,
+    "name": "Thái nguyên/Đường Hùng Vương - Tp Thái Nguyên, Vietnam",
+    "geo": [
+      21.593151,
+      105.8431043
+    ],
+    "aqi": 86,
+    "time": "2025-07-30 18:00:00"
+  },
+  {
+    "id": 13250,
+    "name": "Lào Cai/KCN TALOONG1, Vietnam",
+    "geo": [
+      22.3221386,
+      104.1214227
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13251,
+    "name": "Hà Nội/UBND P. Minh Khai, Bắc Từ Liêm, Vietnam",
+    "geo": [
+      21.04975,
+      105.74187
+    ],
+    "aqi": 19,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13252,
+    "name": "Cao Bằng/Trạm khí TTQT, Vietnam",
+    "geo": [
+      22.6782,
+      106.245
+    ],
+    "aqi": 31,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13253,
+    "name": "Bắc Ninh/UBND xã Cao Đức - Gia Bình, Vietnam",
+    "geo": [
+      21.0832037,
+      106.2807861
+    ],
+    "aqi": 15,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13414,
+    "name": "Bắc Ninh/KCN Tiên Sơn, Vietnam",
+    "geo": [
+      21.1194449,
+      105.9896021
+    ],
+    "aqi": "-",
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13415,
+    "name": "Bắc Ninh/UBND_xã Xuân Lâm, Vietnam",
+    "geo": [
+      21.0243474,
+      106.0172877
+    ],
+    "aqi": 85,
+    "time": "2025-05-19 02:00:00"
+  },
+  {
+    "id": 13416,
+    "name": "Bắc Ninh/gần KCN Yên Phong, Vietnam",
+    "geo": [
+      21.1277395,
+      105.8895444
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13417,
+    "name": "Gia Lai/BQL KCN Trà Đa, Vietnam",
+    "geo": [
+      14.017737,
+      108.035181
+    ],
+    "aqi": 23,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13418,
+    "name": "Gia Lai/UBND thị xã An Khê, Vietnam",
+    "geo": [
+      13.953878,
+      108.656162
+    ],
+    "aqi": "-",
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13419,
+    "name": "Hà Nội/Cung thiếu nhi Hà Nội -  Hoàn Kiếm, Vietnam",
+    "geo": [
+      21.028519,
+      105.855409
+    ],
+    "aqi": 101,
+    "time": "2025-02-05 10:00:00"
+  },
+  {
+    "id": 13421,
+    "name": "Hà Nội/Mầm non Khương Trung - Thanh Xuân, Vietnam",
+    "geo": [
+      20.994886,
+      105.816753
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13423,
+    "name": "Hà Nội/Mần non Tứ Liên - quận Tây Hồ, Vietnam",
+    "geo": [
+      21.064117,
+      105.833387
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13424,
+    "name": "Hà Nội/Nhà văn hóa thôn Sáp Mai, Võng La - Đông Anh, Vietnam",
+    "geo": [
+      21.110533,
+      105.760445
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13425,
+    "name": "Hà Nội/Nhà văn hóa thôn Xà Cầu - Ứng Hòa, Vietnam",
+    "geo": [
+      20.786189,
+      105.779694
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13426,
+    "name": "Hà Nội/Quảng trường Đông Kinh Nghĩa Thục, Vietnam",
+    "geo": [
+      21.031934,
+      105.851439
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13427,
+    "name": "Hà Nội/TT giao lưu văn hóa phố cổ - Hoàn Kiếm, Vietnam",
+    "geo": [
+      21.035584,
+      105.852771
+    ],
+    "aqi": 40,
+    "time": "2025-06-10 10:00:00"
+  },
+  {
+    "id": 13428,
+    "name": "Hà Nội/Tiểu học Đội Bình - Ứng Hòa, Vietnam",
+    "geo": [
+      20.648485,
+      105.82045
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13429,
+    "name": "Hà Nội/Trường THCS Văn Yên - Hà Đông, Vietnam",
+    "geo": [
+      20.972052,
+      105.785624
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13430,
+    "name": "Hà Nội/Trạm ý tế xã Sài Sơn - Quốc Oai, Vietnam",
+    "geo": [
+      21.016327,
+      105.648676
+    ],
+    "aqi": 95,
+    "time": "2025-02-05 15:00:00"
+  },
+  {
+    "id": 13432,
+    "name": "Hà Nội/UBND P.Cầu Diễn - Nam Từ Liêm, Vietnam",
+    "geo": [
+      21.03976,
+      105.765216
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13433,
+    "name": "Hà Nội/UBND Phường Điện Biên - Ba Đình, Vietnam",
+    "geo": [
+      21.032483,
+      105.832844
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13435,
+    "name": "Hà Nội/UBND TT Kim Bài - Thanh Oai, Vietnam",
+    "geo": [
+      20.858022,
+      105.765582
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13436,
+    "name": "Hà Nội/UBND TT Liên Quan – Thạch Thất, Vietnam",
+    "geo": [
+      21.056142,
+      105.573491
+    ],
+    "aqi": 79,
+    "time": "2025-02-05 13:00:00"
+  },
+  {
+    "id": 13437,
+    "name": "Hà Nội/UBND TT Sóc Sơn, huyện Sóc Sơn, Vietnam",
+    "geo": [
+      21.257377,
+      105.851108
+    ],
+    "aqi": 36,
+    "time": "2025-03-19 16:00:00"
+  },
+  {
+    "id": 13438,
+    "name": "Hà Nội/UBND TT Xuân Mai - Chương Mỹ, Vietnam",
+    "geo": [
+      20.89934,
+      105.577276
+    ],
+    "aqi": 93,
+    "time": "2025-03-17 08:00:00"
+  },
+  {
+    "id": 13441,
+    "name": "Hà Nội/UNBD TT Vân Đình - Ứng Hòa, Vietnam",
+    "geo": [
+      20.732725,
+      105.770276
+    ],
+    "aqi": 118,
+    "time": "2025-02-05 11:00:00"
+  },
+  {
+    "id": 13443,
+    "name": "Quảng Ninh/Gần KCN Cái Lân, Vietnam",
+    "geo": [
+      20.972463,
+      107.044081
+    ],
+    "aqi": "-",
+    "time": "2025-05-31 18:00:00"
+  },
+  {
+    "id": 13444,
+    "name": "Quảng Ninh/K11 - Minh Thành, Vietnam",
+    "geo": [
+      21.006153,
+      106.859097
+    ],
+    "aqi": "-",
+    "time": "2025-04-09 18:00:00"
+  },
+  {
+    "id": 13445,
+    "name": "Quảng Ninh/Nhuệ Hổ - Đông Triều, Vietnam",
+    "geo": [
+      21.069974,
+      106.556375
+    ],
+    "aqi": "-",
+    "time": "2025-05-28 05:00:00"
+  },
+  {
+    "id": 13446,
+    "name": "Quảng Ninh/Trung tâm văn hóa thể thao Cẩm Phả, Vietnam",
+    "geo": [
+      21.009332,
+      107.27356
+    ],
+    "aqi": "-",
+    "time": "2025-06-17 14:00:00"
+  },
+  {
+    "id": 13447,
+    "name": "Quảng Ninh/UBND huyện Hải Hà, Vietnam",
+    "geo": [
+      21.452778,
+      107.760242
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13658,
+    "name": "Đà Nẵng/Hòa Thuận Tây, Hải Châu - KTTV - Trạm cảm biến, Vietnam",
+    "geo": [
+      16.043252,
+      108.206826
+    ],
+    "aqi": 141,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13659,
+    "name": "Tây Ninh/Thị xã Tràng Bảng, Vietnam",
+    "geo": [
+      11.030287,
+      106.35631
+    ],
+    "aqi": 57,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13660,
+    "name": "Tây Ninh/Phường 3 - TP. Tây Ninh, Vietnam",
+    "geo": [
+      11.327715,
+      106.10414
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13661,
+    "name": "Trà Vinh/xã Đông Hải, huyện Duyên Hải, Vietnam",
+    "geo": [
+      9.575555,
+      106.488361
+    ],
+    "aqi": 13,
+    "time": "2025-07-31 07:00:00"
+  },
+  {
+    "id": 13662,
+    "name": "Trà Vinh/xã Dân Thành, TX Duyên Hải, Vietnam",
+    "geo": [
+      9.599143,
+      106.51985
+    ],
+    "aqi": 54,
+    "time": "2025-07-31 07:00:00"
+  },
+  {
+    "id": 13663,
+    "name": "Sơn La/P. Tô Hiệu - KTTV - Trạm cảm biến, Vietnam",
+    "geo": [
+      21.331983,
+      103.905326
+    ],
+    "aqi": 17,
+    "time": "2025-04-09 07:00:00"
+  },
+  {
+    "id": 13665,
+    "name": "Lạng Sơn/Đông Tân - Hữu Lũng, Vietnam",
+    "geo": [
+      21.539472,
+      106.3625
+    ],
+    "aqi": 30,
+    "time": "2025-07-31 23:00:00"
+  },
+  {
+    "id": 13666,
+    "name": "Nghệ An/Trường Thi, Thành phố Vinh - KTTV - Trạm cảm biến, Vietnam",
+    "geo": [
+      18.675369,
+      105.690945
+    ],
+    "aqi": 19,
+    "time": "2025-08-01 09:00:00"
+  },
+  {
+    "id": 13667,
+    "name": "Lạng Sơn/xã Hồng Phong - Cao Lộc, Vietnam",
+    "geo": [
+      21.930528,
+      106.681389
+    ],
+    "aqi": 6,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13668,
+    "name": "Lạng Sơn/phường Chi Lăng - TP Lạng Sơn, Vietnam",
+    "geo": [
+      21.843325,
+      106.7506
+    ],
+    "aqi": 13,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13669,
+    "name": "Long An/xã Đức Lập Hạ, huyện Đức Hòa, Vietnam",
+    "geo": [
+      10.91271,
+      106.431056
+    ],
+    "aqi": "-",
+    "time": "2025-07-09 18:00:00"
+  },
+  {
+    "id": 13670,
+    "name": "Long An/TT văn hóa huyện Cần Giuộc, Vietnam",
+    "geo": [
+      10.60557,
+      106.666456
+    ],
+    "aqi": "-",
+    "time": "2025-01-07 17:00:00"
+  },
+  {
+    "id": 13671,
+    "name": "Long An/TT văn hóa huyện Bến Lức, Vietnam",
+    "geo": [
+      10.645084,
+      106.485962
+    ],
+    "aqi": "-",
+    "time": "2025-01-07 17:00:00"
+  },
+  {
+    "id": 13672,
+    "name": "Hải Phòng/Phủ Liễn, Núi Kha Lâm, Kiến An - KTTV - Trạm cảm biến, Vietnam",
+    "geo": [
+      20.805798,
+      106.629752
+    ],
+    "aqi": 3,
+    "time": "2025-04-09 07:00:00"
+  },
+  {
+    "id": 13674,
+    "name": "Hải Dương/Trạm Y tế Duy Tân - Kinh Môn, Vietnam",
+    "geo": [
+      21.031,
+      106.5291
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13675,
+    "name": "Hải Dương/Trạm Tân Bình - TP Hải Dương, Vietnam",
+    "geo": [
+      20.927,
+      106.314
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13676,
+    "name": "Hải Dương/TT Phú Thái - Kim Thành, Vietnam",
+    "geo": [
+      20.963853,
+      106.510417
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13677,
+    "name": "Hải Dương/TT Minh Tân - Kinh Môn, Vietnam",
+    "geo": [
+      21.038515,
+      106.582088
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13679,
+    "name": "Hải Dương/TT Kẻ Sặt - Bình Giang, Vietnam",
+    "geo": [
+      20.910075,
+      106.148796
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13680,
+    "name": "Hải Dương/Hội Doanh Nghiệp - Kinh Môn, Vietnam",
+    "geo": [
+      20.9932,
+      106.5452
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13681,
+    "name": "Hải Dương/Gần nhiệt điện Phả Lại - Chí Linh, Vietnam",
+    "geo": [
+      21.115254,
+      106.304528
+    ],
+    "aqi": "-",
+    "time": ""
+  },
+  {
+    "id": 13683,
+    "name": "Hưng Yên/Sở TNMT - 437 Nguyễn Văn Linh, Tp Hưng Yên, Vietnam",
+    "geo": [
+      20.661683,
+      106.058761
+    ],
+    "aqi": 29,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13684,
+    "name": "Hưng Yên/Nhà văn hóa xã Tân Quang - h.Văn Lâm, Vietnam",
+    "geo": [
+      20.980478,
+      105.974463
+    ],
+    "aqi": 26,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13685,
+    "name": "Hà Nội/Láng Thượng, Đống Đa - KTTV - Trạm cảm biến, Vietnam",
+    "geo": [
+      21.020424,
+      105.806926
+    ],
+    "aqi": 1,
+    "time": "2025-01-10 03:00:00"
+  },
+  {
+    "id": 13687,
+    "name": "Cần Thơ/Ninh Kiều - KTTV - Trạm cảm biến, Vietnam",
+    "geo": [
+      10.026977,
+      105.768249
+    ],
+    "aqi": 29,
+    "time": "2025-08-01 09:00:00"
+  },
+  {
+    "id": 13688,
+    "name": "Cao Bằng/Phường Đề Thám , TP. Cao Bằng, Vietnam",
+    "geo": [
+      22.67953,
+      106.215361
+    ],
+    "aqi": 1,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 13756,
+    "name": "Tp Hồ Chí Minh/Đường Nguyễn Văn Tạo, Ấp 3, Nhà Bè - KTTV - Trạm cảm biến, Vietnam",
+    "geo": [
+      10.65961,
+      106.727916
+    ],
+    "aqi": 7,
+    "time": "2025-08-01 09:00:00"
+  },
+  {
+    "id": 13763,
+    "name": "Ninh Bình/Cúc Phương, Đông Phong, Nho Quan - KTTV - Trạm cảm biến, Vietnam",
+    "geo": [
+      20.320741,
+      105.745489
+    ],
+    "aqi": 3,
+    "time": "2025-08-01 07:00:00"
+  },
+  {
+    "id": 14640,
+    "name": "Quảng Bình/Khu kinh tế Hòn La, Vietnam",
+    "geo": [
+      17.932938,
+      106.49662
+    ],
+    "aqi": 37,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 14641,
+    "name": "Thái Bình/Trạm quan trắc khí tại Thái Thụy, Vietnam",
+    "geo": [
+      20.461641,
+      106.516972
+    ],
+    "aqi": 25,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 14642,
+    "name": "Vũng Tàu/Ngã tư Giếng nước - Tp.Vũng Tàu, Vietnam",
+    "geo": [
+      10.367976,
+      107.0844
+    ],
+    "aqi": 22,
+    "time": "2025-08-01 09:00:00"
+  },
+  {
+    "id": 14643,
+    "name": "Vũng Tàu/Tiểu học Tóc Tiên - TX.Phú Mỹ, Vietnam",
+    "geo": [
+      10.589853,
+      107.131743
+    ],
+    "aqi": 20,
+    "time": "2025-08-01 09:00:00"
+  },
+  {
+    "id": 14644,
+    "name": "Vũng Tàu/Ngã tư Phan Đăng Lưu và 27_4 - Tp.Bà Rịa, Vietnam",
+    "geo": [
+      10.502431,
+      107.169408
+    ],
+    "aqi": 21,
+    "time": "2025-08-01 09:00:00"
+  },
+  {
+    "id": 14925,
+    "name": "Hà Tĩnh/Trạm Kỳ Phương, Vietnam",
+    "geo": [
+      18.0145193,
+      106.3990682
+    ],
+    "aqi": "-",
+    "time": "2025-01-07 17:00:00"
+  },
+  {
+    "id": 14926,
+    "name": "Quảng Ninh/UBND P. Phương Nam - Tp. Uông Bí, Vietnam",
+    "geo": [
+      21.020397,
+      106.700332
+    ],
+    "aqi": "-",
+    "time": "2025-05-27 18:00:00"
+  },
+  {
+    "id": 14927,
+    "name": "Thanh Hoá/UBND P. Lam Sơn, TX. Bỉm Sơn, Vietnam",
+    "geo": [
+      19.91053,
+      105.4039
+    ],
+    "aqi": "-",
+    "time": "2025-07-31 07:00:00"
+  },
+  {
+    "id": 14928,
+    "name": "Vĩnh Long/KCN Hòa Phú, huyện Long Hồ, Vietnam",
+    "geo": [
+      10.159882,
+      105.936733
+    ],
+    "aqi": "-",
+    "time": "2025-05-21 22:00:00"
+  },
+  {
+    "id": 14929,
+    "name": "Vĩnh Long/Khu hành chính Tx.Bình Minh, Vietnam",
+    "geo": [
+      10.06934,
+      105.820391
+    ],
+    "aqi": 19,
+    "time": "2025-06-18 07:00:00"
+  },
+  {
+    "id": 14930,
+    "name": "Vĩnh Long/UBND tỉnh, đường Hoàng Thái Hiếu, Vietnam",
+    "geo": [
+      10.251317,
+      105.946931
+    ],
+    "aqi": 3,
+    "time": "2025-08-01 10:00:00"
+  },
+  {
+    "id": 469594,
+    "name": "Vĩnh Long: Khu hành chính Tx.Bình Minh (KK), Binh Minh, Vietnam",
+    "geo": [
+      10.06934,
+      105.820391
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469600,
+    "name": "Vĩnh Long: KCN Hòa Phú, huyện Long Hồ (KK), Vietnam",
+    "geo": [
+      10.159882,
+      105.936733
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469603,
+    "name": "Lạng Sơn: phường Chi Lăng - TP Lạng Sơn(KK), Vietnam",
+    "geo": [
+      21.843325,
+      106.7506
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469612,
+    "name": "Vũng Tàu: Tiểu học Tóc Tiên - TX.Phú Mỹ (KK), Toc Tien Commune, Vietnam",
+    "geo": [
+      10.589853,
+      107.131743
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469633,
+    "name": "Lào Cai: KCN Tằng Loỏng - trạm số 2 (KK), Vietnam",
+    "geo": [
+      22.295501,
+      104.133739
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469636,
+    "name": "Quảng Bình: Khu kinh tế Hòn La (KK), Quảng Trạch District, Vietnam",
+    "geo": [
+      17.932938,
+      106.49662
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469645,
+    "name": "Vĩnh Long: UBND tỉnh, đường Hoàng Thái Hiếu (KK), Vietnam",
+    "geo": [
+      10.251317,
+      105.946931
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469654,
+    "name": "Trà Vinh: xã Đông Hải, huyện Duyên Hải (KK), Vietnam",
+    "geo": [
+      9.575555,
+      106.488361
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469687,
+    "name": "Quảng Ninh: UBND P. Phương Nam - Tp. Uông Bí (KK), Vietnam",
+    "geo": [
+      21.020397,
+      106.700332
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469690,
+    "name": "Vũng Tàu: Ngã tư Phan Đăng Lưu và 27_4 - Tp.Bà Rịa (KK), Ba Ria City, Vietnam",
+    "geo": [
+      10.502431,
+      107.169408
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469792,
+    "name": "Bình Phước: huyện Đồng Phú (KK), Thị trấn Tân Phú, Vietnam",
+    "geo": [
+      11.452012,
+      106.874503
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469825,
+    "name": "Trà Vinh: Tp. Trà Vinh (KK), Trà Vinh City, Vietnam",
+    "geo": [
+      9.923886,
+      106.339604
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 469909,
+    "name": "Bình Phước: thị xã Chơn Thành (KK), Chơn Thành Town, Vietnam",
+    "geo": [
+      11.482982,
+      106.607985
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 474016,
+    "name": "Sóc Trăng: Sở TNMT - 16 Hùng Vương, P.6, Tp. Sóc Trăng (KK), Vietnam",
+    "geo": [
+      9.6135843,
+      105.9679228
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476137,
+    "name": "Bình Dương: số 593 Đại lộ Bình Dương, P. Hiệp Thành (KK), Thu Dau Mot City, Vietnam",
+    "geo": [
+      10.9923,
+      106.6577
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476155,
+    "name": "Đà Nẵng: Khuôn viên trường ĐH sư phạm Đà Nẵng (KK), Vietnam",
+    "geo": [
+      16.0622,
+      108.1594
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476158,
+    "name": "Hưng Yên: số 437 Nguyễn Văn Linh - Tp Hưng Yên (KK), Hung Yen City, Vietnam",
+    "geo": [
+      20.6618,
+      106.0585
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476167,
+    "name": "HCM: Đ. Lê Hữu Kiều - P. Bình Trưng Tây - Quận 2 (Ngã ba Lê Hữu Kiểu và Trương Văn Bang) (KK), Thu Duc City, Vietnam",
+    "geo": [
+      10.7832,
+      106.7528
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476170,
+    "name": "Hải Dương: UBND TP. Hải Dương - 106 Đường Trần Hưng Đạo (KK), Hải Dương City, Vietnam",
+    "geo": [
+      20.9381,
+      106.3357
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476182,
+    "name": "HCM: Khu Liên cơ quan Bộ Tài Nguyên và Môi Trường - số 20 Đ. Lý Chính Thắng (KK), Ho Chi Minh City, Vietnam",
+    "geo": [
+      10.7823,
+      106.6834
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476188,
+    "name": "Hà Nam: Công Viên Nam Cao - P.Quang Trung - TP. Phủ Lý (KK), Phu Ly City, Vietnam",
+    "geo": [
+      20.536,
+      105.9165
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476272,
+    "name": "Long An: UBND Tp Tân An - 76 Hùng Vương - P.2 (KK), Vietnam",
+    "geo": [
+      10.5391,
+      106.4045
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476293,
+    "name": "Bắc Giang: Khu liên cơ quan tỉnh Bắc Giang - P. Ngô Quyền - TP. Bắc Giang (KK), Lạng Giang District, Vietnam",
+    "geo": [
+      21.301503,
+      106.22603
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476308,
+    "name": "Quảng Nam: Tiếp giáp Đ. Hùng Vương - KDC Đ. Hồ Xuân Hương (KK), Tam Kỳ, Vietnam",
+    "geo": [
+      15.5621,
+      108.4867
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476314,
+    "name": "Ninh Thuận: Công viên (bến xe cũ) - Đ. Thống Nhất - P. Thanh Sơn - TP Phan Rang (KK), Phan Rang–Tháp Chàm City, Vietnam",
+    "geo": [
+      11.5736,
+      108.9918
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476317,
+    "name": "Quảng Ngãi: UBND P. Nguyễn Nghiêm - TP Quảng Ngãi (KK), Quảng Ngãi City, Vietnam",
+    "geo": [
+      15.121,
+      108.8041
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476341,
+    "name": "Hà Nội: ĐHBK cổng Parabol đường Giải Phóng (KK), Vietnam",
+    "geo": [
+      21.0052,
+      105.8418
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476452,
+    "name": "Lâm Đồng: Vườn hoa - đối diện THCS Lam Sơn - Phường 6 - TP Đà Lạt (KK), Da Lat City, Vietnam",
+    "geo": [
+      11.9527,
+      108.4298
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476626,
+    "name": "Bình Định: Khuôn viên Cây xanh gần cầu chui đường Hoa Lư - TP. Quy Nhơn (KK), Vietnam",
+    "geo": [
+      13.7851,
+      109.2198
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476722,
+    "name": "Thanh Hoá: BQL KKT Nghi Sơn, TX. Nghi Sơn (KK), Vietnam",
+    "geo": [
+      19.3992,
+      105.753
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 476842,
+    "name": "Thái Bình: Cầu Thái Bình - Đ. Trần Thái Tông - P. Bồ Xuyên - TP Thái Bình (KK), Vietnam",
+    "geo": [
+      20.4578,
+      106.3439
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 477292,
+    "name": "Hà Nội: Công viên Nhân Chính - Khuất Duy Tiến (KK), Vietnam",
+    "geo": [
+      21.0031,
+      105.7947
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 477553,
+    "name": "Vũng Tàu: Đ. Huyền Trân Công Chúa - Phường 8 - TP Vũng Tàu, Dat Do Town, Vietnam",
+    "geo": [
+      10.4955,
+      107.2745
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 488575,
+    "name": "Bình Phước: Trụ sở Sở Tài nguyên và Môi trường - Tp Đồng Xoài (KK), Vietnam",
+    "geo": [
+      11.532333,
+      106.884333
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 518212,
+    "name": "Hà Tĩnh: UBND phường Kỳ Liên, thị xã Kỳ Anh - trạm cảm biến (KK), Hồng Sơn, Vietnam",
+    "geo": [
+      18.01266,
+      106.427342
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 518218,
+    "name": "Hà Tĩnh: Trạm Kỳ Hà (KK) - thử nghiệm, Kỳ Anh, Vietnam",
+    "geo": [
+      18.092652,
+      106.340519
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 518221,
+    "name": "Hà Tĩnh: Trạm Kỳ Long (KK) - thử nghiệm, Vietnam",
+    "geo": [
+      18.022561,
+      106.396899
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 519190,
+    "name": "Sơn La: P. Tô Hiệu - KTTV - MT (KK), Vietnam",
+    "geo": [
+      21.331983,
+      103.905326
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 519193,
+    "name": "Hải Phòng: Phủ Liễn, Núi Kha Lâm, Kiến An - KTTV -MT (KK), Vietnam",
+    "geo": [
+      20.8055,
+      106.6309
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 520993,
+    "name": "Thái Nguyên: Sân vận động Gang thép - P Trung Thành - TP Thái Nguyên (KK), Vietnam",
+    "geo": [
+      21.53911,
+      105.87202
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 520996,
+    "name": "Bình Định: huyện Tuy Phước (KK), Quy Nhơn, Vietnam",
+    "geo": [
+      13.761852,
+      109.220055
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 520999,
+    "name": "Bình Định: Tx. Hoài Nhơn (KK), Vĩnh Trung, Vietnam",
+    "geo": [
+      14.466098,
+      109.045504
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 521002,
+    "name": "Thái Nguyên: Chợ tổ 7 - 8 P Mỏ Chè - TP Sông Công (KK), Vietnam",
+    "geo": [
+      21.47268,
+      105.84471
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 521005,
+    "name": "Thái Nguyên: Tổ 7 - Quan Triều - TP Thái Nguyên (KK), Vietnam",
+    "geo": [
+      21.60259,
+      105.80275
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 521008,
+    "name": "Khánh Hòa:  Trạm không khí xung quanh Ninh An (KK), Xã Ninh An, Vietnam",
+    "geo": [
+      12.563,
+      109.153
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 521107,
+    "name": "Gia lai: Chư Sê (KK), Vietnam",
+    "geo": [
+      13.698654,
+      108.076375
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 533293,
+    "name": "Khánh Hòa:  Trạm Không khí xung quanh Lương Hoà (KK), Xã Vĩnh Lương, Vietnam",
+    "geo": [
+      12.319599,
+      109.18398
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 543142,
+    "name": "Quảng Ninh: phường Quang Hanh - Cẩm Phả (KK), Vietnam",
+    "geo": [
+      21.009555,
+      107.232036
+    ],
+    "type": "airnet"
+  },
+  {
+    "id": 543145,
+    "name": "Quảng Ninh: Phường Cẩm Thịnh - Cẩm Phả (KK), Vietnam",
+    "geo": [
+      21.006517,
+      107.344252
+    ],
+    "type": "airnet"
+  }
+]
