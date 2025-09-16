@@ -895,17 +895,16 @@ body {
   transition: opacity 0.2s ease-in-out;
 }
 
-
-/* --- INFO SIDEBAR STYLES (Đã chuyển sang trái) --- */
+/* --- INFO SIDEBAR STYLES --- */
 .info-sidebar {
   position: absolute;
-  top: 140px; 
-  left: 15px; 
-  width: 300px;
+  top: 140px;
+  left: 15px;
+  width: 320px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   z-index: 1002;
   display: flex;
   flex-direction: column;
@@ -947,43 +946,69 @@ body {
   color: #111;
 }
 
-
 .info-sidebar-content {
   padding: 18px;
   font-size: 14px;
   color: #444;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .info-sidebar-content .info-item {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.info-sidebar-content .info-item:last-child {
-  margin-bottom: 0;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .info-sidebar-content strong {
   color: #111;
+  font-weight: 600;
+  font-size: 13px;
+  opacity: 0.8;
 }
 
 .info-sidebar-content span {
   font-weight: 500;
+  font-size: 15px;
 }
 
-@media (max-width: 768px) {
-  .info-sidebar {
-    top: auto;
-    bottom: 150px;
-    left: 15px;
-    right: 15px;
-    width: auto;
-  }
+.info-sidebar-content .info-value {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.location-item span {
+  line-height: 1.4;
+  color: #0056b3;
+  font-weight: 600;
+}
+
+/* --- THAY ĐỔI Ở ĐÂY --- */
+.coordinates-inline {
+  color: #555;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.recommendation-item {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px dashed #ccc;
+}
+
+.recommendation-item span {
+  background-color: #f0f7ff;
+  border-left: 3px solid #667eea;
+  padding: 10px;
+  border-radius: 4px;
+  line-height: 1.5;
+  font-size: 14px;
 }
 
 .chart-container {
-  margin-top: 20px;
+  margin-top: 15px;
   padding-top: 15px;
   border-top: 1px solid #e0e0e0;
 }
@@ -993,4 +1018,16 @@ body {
   text-align: center;
   font-size: 14px;
   color: #333;
+}
+
+@media (max-width: 768px) {
+  .info-sidebar {
+    top: auto;
+    bottom: 150px;
+    left: 15px;
+    right: 15px;
+    width: auto;
+    max-height: 40vh;
+    overflow-y: auto;
+  }
 }

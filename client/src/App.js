@@ -12,6 +12,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
+// --- Hàm tiện ích ---
 function getHeatIndexColor(val) {
   if (val <= 30) return '#43d967';
   if (val <= 34) return '#ffe066';
@@ -28,22 +29,35 @@ const formatDate = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-const getToday = () => {
-    return new Date();
-}
+const getToday = () => new Date();
 
+const getPM25HealthRecommendation = (value) => {
+    if (value === null || value === undefined) return null;
+    if (value <= 12.0) return "Chất lượng không khí tốt. Bạn có thể hoạt động ngoài trời bình thường.";
+    if (value <= 35.4) return "Chất lượng không khí ở mức trung bình. Nhóm nhạy cảm (người già, trẻ em, người có bệnh hô hấp) nên giảm bớt các hoạt động ngoài trời.";
+    if (value <= 55.4) return "Chất lượng không khí kém. Nhóm nhạy cảm nên tránh ra ngoài. Những người khác nên hạn chế các hoạt động gắng sức ngoài trời.";
+    if (value <= 150.4) return "Chất lượng không khí xấu. Mọi người nên tránh các hoạt động ngoài trời. Nếu phải ra ngoài, hãy đeo khẩu trang chuyên dụng.";
+    if (value <= 250.4) return "Chất lượng không khí rất xấu, ảnh hưởng nghiêm trọng đến sức khỏe. Mọi người nên ở trong nhà và đóng kín cửa sổ.";
+    return "Mức độ nguy hại. Cảnh báo khẩn cấp về sức khỏe. Mọi người tuyệt đối không ra ngoài.";
+};
+
+// --- Component InfoSidebar ---
 const InfoSidebar = ({ info, isLoading, onClose, date }) => {
   const [chartData, setChartData] = useState(null);
   const [isChartLoading, setIsChartLoading] = useState(false);
+  const [chartError, setChartError] = useState(null);
+  const chartQueryRef = useRef(null); 
 
   useEffect(() => {
-    // Chỉ lấy dữ liệu biểu đồ khi có thông tin của lớp PM2.5
-    if (info && info.mapQueryInfo && date && info.label === 'PM2.5 (Hôm nay)') {
+    const newQuery = info ? JSON.stringify(info.mapQueryInfo) : null;
+    
+    if (info && info.mapQueryInfo && info.label === 'PM2.5 (Hôm nay)' && chartQueryRef.current !== newQuery) {
+      chartQueryRef.current = newQuery;
+      
       const loadChartData = async () => {
         setIsChartLoading(true);
-        setChartData(null);
+        setChartError(null); 
         try {
-            // Gọi đến API backend để lấy dữ liệu biểu đồ
             const response = await fetch('/api/chart-data', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -52,24 +66,31 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
                     centerDateStr: date,
                 }),
             });
-            if (!response.ok) throw new Error("Backend chart data error");
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Lỗi không xác định từ backend");
+            }
             const data = await response.json();
             setChartData(data);
         } catch (error) {
-            console.error("Lỗi khi tải dữ liệu biểu đồ từ backend", error);
+            console.error("Lỗi khi tải dữ liệu biểu đồ:", error.message);
+            setChartError("Không thể tải dữ liệu biểu đồ. Vui lòng kiểm tra console của backend.");
             setChartData(null);
         } finally {
             setIsChartLoading(false);
         }
       };
       loadChartData();
-    } else {
-        // Xóa dữ liệu biểu đồ nếu không phải lớp PM2.5
+    } else if (!info) {
         setChartData(null);
+        setChartError(null);
+        chartQueryRef.current = null;
     }
   }, [info, date]);
 
-  if (!info && !isLoading) return null;
+  if (!info) return null;
+  
+  const recommendation = info.label === 'PM2.5 (Hôm nay)' ? getPM25HealthRecommendation(info.value) : null;
 
   return (
     <div className="info-sidebar">
@@ -80,30 +101,41 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
       <div className="info-sidebar-content">
         {isLoading ? (
           <p>Đang tải dữ liệu điểm...</p>
-        ) : info ? (
+        ) : (
           <>
-            <div className="info-item">
-              <strong>Vĩ độ:</strong>
-              <span>{info.lat.toFixed(6)}</span>
-            </div>
-            <div className="info-item">
-              <strong>Kinh độ:</strong>
-              <span>{info.lng.toFixed(6)}</span>
+            <div className="info-item location-item">
+              <strong>Vị trí:</strong>
+              {}
+              <span>
+                {info.locationName || 'Đang xác định...'}
+                {info.lat && info.lng && (
+                  <span className="coordinates-inline">
+                    {' '}( {info.lat.toFixed(3)}, {info.lng.toFixed(3)})
+                  </span>
+                )}
+              </span>
             </div>
             <div className="info-item">
               <strong>{info.label || 'Giá trị'}:</strong>
-              <span>
+              <span className="info-value">
                 {info.value !== null ? `${info.value.toFixed(2)}${info.unit || ''}` : 'Không có dữ liệu'}
               </span>
             </div>
+            {recommendation && (
+              <div className="info-item recommendation-item">
+                <strong>Khuyến cáo:</strong>
+                <span>{recommendation}</span>
+              </div>
+            )}
           </>
-        ) : null}
+        )}
 
-        {info && info.label === 'PM2.5 (Hôm nay)' && (
+        {info.label === 'PM2.5 (Hôm nay)' && (
             <div className="chart-container">
             <h4>7 ngày</h4>
             {isChartLoading && <p>Đang tải dữ liệu biểu đồ...</p>}
-            {chartData && (
+            {chartError && <p style={{ color: 'red' }}>{chartError}</p>}
+            {chartData && !chartError && (
                 <ResponsiveContainer width="100%" height={150}>
                 <LineChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -115,7 +147,7 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
                 </LineChart>
                 </ResponsiveContainer>
             )}
-            {!isChartLoading && !chartData && <p>Không có dữ liệu biểu đồ.</p>}
+            {!isChartLoading && !chartData && !chartError && <p>Không có dữ liệu biểu đồ.</p>}
             </div>
         )}
       </div>
@@ -159,6 +191,8 @@ function App() {
   const handleMapClick = useCallback(async (e) => {
     if (!map) return;
     
+    const { lat, lng } = e.latlng;
+    
     let layerName = '';
     let label = '';
     let unit = '';
@@ -186,26 +220,45 @@ function App() {
         x: Math.round(e.containerPoint.x),
         y: Math.round(e.containerPoint.y),
     };
-    setSidebarInfo({ lat: e.latlng.lat, lng: e.latlng.lng, value: null, label, unit, mapQueryInfo });
+
+    setSidebarInfo({ value: null, label, unit, mapQueryInfo, locationName: 'Đang xác định...', lat, lng });
 
     try {
         const response = await fetch('/api/map-info', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...mapQueryInfo, layerName, time: queryParams.time })
+            body: JSON.stringify({ 
+                ...mapQueryInfo, 
+                layerName, 
+                time: queryParams.time,
+                lat,
+                lng
+            })
         });
         if (!response.ok) throw new Error('Backend GetFeatureInfo error');
         
         const data = await response.json();
-        let value = null;
-        if (data.features && data.features.length > 0) {
-            value = data.features[0].properties.GRAY_INDEX;
-        }
       
-        setSidebarInfo({ lat: e.latlng.lat, lng: e.latlng.lng, value, label, unit, mapQueryInfo });
+        setSidebarInfo({ 
+            mapQueryInfo: mapQueryInfo,
+            value: data.value, 
+            locationName: data.locationName,
+            label, 
+            unit,
+            lat,
+            lng
+        });
     } catch (error) {
         console.error("Lỗi khi gọi API map-info:", error);
-        setSidebarInfo({ lat: e.latlng.lat, lng: e.latlng.lng, value: null, label, unit, mapQueryInfo });
+        setSidebarInfo({ 
+            mapQueryInfo: mapQueryInfo,
+            value: null, 
+            locationName: 'Lỗi khi lấy dữ liệu',
+            label, 
+            unit,
+            lat,
+            lng
+        });
     } finally {
         setIsSidebarLoading(false);
     }
@@ -251,7 +304,6 @@ function App() {
     const loadDataForDay = async () => {
       setLoading(true);
       try {
-        // Gọi đến API backend của bạn
         const response = await fetch(`/api/stations/${apiDate}`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
@@ -744,4 +796,3 @@ function App() {
 }
 
 export default App;
-

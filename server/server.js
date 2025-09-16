@@ -65,7 +65,9 @@ app.get('/api/stations/:date', async (req, res) => {
 
 
 app.post('/api/map-info', async (req, res) => {
-    const { bbox, width, height, x, y, layerName, time } = req.body;
+    const { bbox, width, height, x, y, layerName, time, lat, lng } = req.body;
+    
+    // --- Step 1: Get Value from GeoServer ---
     const wmsUrl = 'http://localhost:8080/geoserver/air_quality/wms';
     const params = new URLSearchParams({
         service: 'WMS', version: '1.1.1', request: 'GetFeatureInfo',
@@ -74,13 +76,41 @@ app.post('/api/map-info', async (req, res) => {
     });
     if (time) params.append('time', time);
 
+    let featureInfoData;
     try {
         const response = await axios.get(`${wmsUrl}?${params.toString()}`);
-        res.json(response.data);
+        featureInfoData = response.data;
     } catch (error) {
         console.error("Lỗi GetFeatureInfo:", error.message);
-        res.status(error.response?.status || 500).json({ error: 'Failed to fetch from GeoServer' });
+        return res.status(error.response?.status || 500).json({ error: 'Failed to fetch from GeoServer' });
     }
+    
+    const value = (featureInfoData.features && featureInfoData.features.length > 0)
+        ? featureInfoData.features[0].properties.GRAY_INDEX
+        : null;
+
+    // --- Step 2: Reverse Geocode Latitude and Longitude ---
+    let locationName = 'Không xác định được vị trí';
+    if (lat && lng) {
+        try {
+            const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`;
+            const geoResponse = await axios.get(geoUrl, {
+                headers: { 'User-Agent': 'WebGIS-MoiTruong-App/1.0' }
+            });
+            if (geoResponse.data && geoResponse.data.display_name) {
+                locationName = geoResponse.data.display_name;
+            }
+        } catch (error) {
+            console.error("Lỗi Reverse Geocoding:", error.message);
+            // Giữ nguyên giá trị mặc định nếu có lỗi
+        }
+    }
+
+    // --- Step 3: Combine results and send back to client ---
+    res.json({
+        value: value,
+        locationName: locationName
+    });
 });
 
 
