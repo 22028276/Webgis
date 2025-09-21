@@ -1,3 +1,4 @@
+require('dotenv').config(); // Nạp các biến môi trường từ file .env
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -6,12 +7,46 @@ const allBaseStations = require('./all_stations.json');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Lấy URL của GeoServer từ biến môi trường và xây dựng URL cơ sở
+const GEOSERVER_BASE_URL = `${process.env.GEOSERVER_URL}/geoserver/air_quality/wms`;
+
 app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
   res.redirect('http://localhost:3000');
 });
+
+// =================================================================
+// === ROUTE PROXY MỚI CHO GEOSERVER TILE ===
+// =================================================================
+app.get('/api/geoserver-tile', async (req, res) => {
+  try {
+    // 1. Lấy tất cả các tham số (bbox, width, height, layers...) từ request của frontend
+    const params = req.query;
+
+    // 2. Sử dụng URL cơ sở của GeoServer đã được định nghĩa
+    const geoserverUrl = GEOSERVER_BASE_URL;
+
+    // 3. Gọi đến GeoServer và yêu cầu trả về dữ liệu dạng stream (luồng)
+    const response = await axios.get(geoserverUrl, {
+      params: params, // Chuyển tiếp tất cả các tham số
+      responseType: 'stream'
+    });
+
+    // 4. Thiết lập header content-type cho response trả về client
+    res.setHeader('Content-Type', response.headers['content-type']);
+
+    // 5. Chuyển thẳng (pipe) luồng dữ liệu ảnh nhận được từ GeoServer về cho frontend
+    response.data.pipe(res);
+
+  } catch (error) {
+    console.error("Lỗi proxy GeoServer:", error.message);
+    res.status(500).send("Không thể lấy dữ liệu từ GeoServer");
+  }
+});
+// =================================================================
+
 
 const getDailyAverage = (pollutantArray) => {
     if (!pollutantArray || pollutantArray.length === 0) return undefined;
@@ -49,7 +84,7 @@ app.get('/api/stations/:date', async (req, res) => {
                 status: dailyMaxAqi !== null ? 'Hoạt động' : 'Bảo trì', lastUpdate: date,
                 environmentalData: {
                     aqi: dailyMaxAqi,
-                    pm25: getDailyAverage(hourlyData.pm2_5), pm10: getDailyAverage(hourlyData.pm10),
+                    pm25: getDailyAverage(hourlyData.pm_5), pm10: getDailyAverage(hourlyData.pm10),
                     co: getDailyAverage(hourlyData.carbon_monoxide), no2: getDailyAverage(hourlyData.nitrogen_dioxide),
                     so2: getDailyAverage(hourlyData.sulphur_dioxide), o3: getDailyAverage(hourlyData.ozone),
                     hourly: hourlyData
@@ -67,8 +102,8 @@ app.get('/api/stations/:date', async (req, res) => {
 app.post('/api/map-info', async (req, res) => {
     const { bbox, width, height, x, y, layerName, time, lat, lng } = req.body;
     
-    // --- Step 1: Get Value from GeoServer ---
-    const wmsUrl = 'http://localhost:8080/geoserver/air_quality/wms';
+    const wmsUrl = GEOSERVER_BASE_URL;
+    
     const params = new URLSearchParams({
         service: 'WMS', version: '1.1.1', request: 'GetFeatureInfo',
         layers: layerName, query_layers: layerName, info_format: 'application/json',
@@ -89,7 +124,6 @@ app.post('/api/map-info', async (req, res) => {
         ? featureInfoData.features[0].properties.GRAY_INDEX
         : null;
 
-    // --- Step 2: Reverse Geocode Latitude and Longitude ---
     let locationName = 'Không xác định được vị trí';
     if (lat && lng) {
         try {
@@ -102,11 +136,9 @@ app.post('/api/map-info', async (req, res) => {
             }
         } catch (error) {
             console.error("Lỗi Reverse Geocoding:", error.message);
-            // Giữ nguyên giá trị mặc định nếu có lỗi
         }
     }
 
-    // --- Step 3: Combine results and send back to client ---
     res.json({
         value: value,
         locationName: locationName
@@ -125,6 +157,8 @@ app.post('/api/chart-data', async (req, res) => {
 
     const formatDate = (date) => date.toISOString().split('T')[0];
 
+    const wmsUrl = GEOSERVER_BASE_URL;
+
     const requests = dates.map(date => {
         const params = new URLSearchParams({
             service: 'WMS', version: '1.1.1', request: 'GetFeatureInfo',
@@ -133,7 +167,6 @@ app.post('/api/chart-data', async (req, res) => {
             bbox: mapQueryInfo.bbox, width: mapQueryInfo.width, height: mapQueryInfo.height,
             x: mapQueryInfo.x, y: mapQueryInfo.y, time: formatDate(date)
         });
-        const wmsUrl = 'http://localhost:8080/geoserver/air_quality/wms';
         return axios.get(`${wmsUrl}?${params.toString()}`);
     });
 
@@ -142,14 +175,14 @@ app.post('/api/chart-data', async (req, res) => {
         const chartData = responses.map((response, index) => {
             if (response instanceof Error) {
                  return {
-                    date: new Date(dates[index]).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }),
+                    date: new Date(dates[index]).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit' }),
                     value: null,
                 };
             }
             const data = response.data;
             const value = (data.features && data.features.length > 0) ? data.features[0].properties.GRAY_INDEX : null;
             return {
-                date: new Date(dates[index]).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }),
+                date: new Date(dates[index]).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit' }),
                 value: value,
             };
         });

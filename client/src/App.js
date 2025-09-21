@@ -4,6 +4,9 @@ import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+// Frontend bây giờ chỉ cần biết URL của backend API
+const API_URL = process.env.REACT_APP_API_URL;
+
 // --- Sửa lỗi icon mặc định của Leaflet ---
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -58,9 +61,12 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
         setIsChartLoading(true);
         setChartError(null); 
         try {
-            const response = await fetch('/api/chart-data', {
+            const response = await fetch(`${API_URL}/api/chart-data`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
                 body: JSON.stringify({
                     mapQueryInfo: info.mapQueryInfo,
                     centerDateStr: date,
@@ -105,7 +111,6 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
           <>
             <div className="info-item location-item">
               <strong>Vị trí:</strong>
-              {}
               <span>
                 {info.locationName || 'Đang xác định...'}
                 {info.lat && info.lng && (
@@ -224,9 +229,12 @@ function App() {
     setSidebarInfo({ value: null, label, unit, mapQueryInfo, locationName: 'Đang xác định...', lat, lng });
 
     try {
-        const response = await fetch('/api/map-info', {
+        const response = await fetch(`${API_URL}/api/map-info`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true'
+            },
             body: JSON.stringify({ 
                 ...mapQueryInfo, 
                 layerName, 
@@ -304,7 +312,11 @@ function App() {
     const loadDataForDay = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/stations/${apiDate}`);
+        const response = await fetch(`${API_URL}/api/stations/${apiDate}`, {
+            headers: {
+                'ngrok-skip-browser-warning': 'true'
+            }
+        });
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         setAllDayData(data.stations || []);
@@ -374,7 +386,15 @@ function App() {
 
   useEffect(() => {
     if (!map || !layersControlRef.current) return;
-    const wmsUrl = 'http://localhost:8080/geoserver/air_quality/wms';
+    
+    // URL của WMS bây giờ trỏ đến endpoint proxy trên backend của bạn
+    const wmsUrl = `${API_URL}/api/geoserver-tile`;
+    
+    if (!wmsUrl || !API_URL) {
+        console.error("API_URL is not defined in your .env file!");
+        return;
+    }
+
     const pm25LayerName = 'air_quality:imagemosaic';
     const demLayerName = 'air_quality:DEM_VN_3km';
 
@@ -397,7 +417,7 @@ function App() {
     }
     
     const selectedYear = currentDateTime.getFullYear();
-    if (selectedYear === 2023) {
+    if (selectedYear === 2023 || selectedYear === 2024 || selectedYear === 2025) {
         pm25LayerRef.current.setParams({ time: apiDate });
     } else {
         if (map.hasLayer(pm25LayerRef.current)) {
