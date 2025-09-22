@@ -5,8 +5,6 @@ import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import 'leaflet-geotiff';
 
-
-
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -249,7 +247,7 @@ function App() {
       
       const demRasterUrl = `/api/tiff-proxy/DEM_VN_3km.tif`;
       const demLayer = L.leafletGeotiff(demRasterUrl, {
-        renderer: new L.LeafletGeotiffRenderer(), 
+        renderer: new L.LeafletGeotiff.Plotty(), // SỬA LẠI TÊN RENDERER
         band: 0,
         displayMin: 0,
         displayMax: 3000,
@@ -424,7 +422,7 @@ function App() {
     const rasterUrl = `/api/tiff-proxy/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
 
     const newLayer = L.leafletGeotiff(rasterUrl, {
-      renderer: new L.LeafletGeotiffRenderer(),
+      renderer: new L.LeafletGeotiff.Plotty(), // SỬA LẠI TÊN RENDERER
       band: 0,
       displayMin: 0,
       displayMax: 250,
