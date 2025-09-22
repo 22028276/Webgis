@@ -3,9 +3,9 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import GeoRasterLayer from 'georaster-layer-for-leaflet';
+import 'leaflet-geotiff'; // Thư viện mới
 
-const API_URL = '';
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -68,7 +68,7 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
         setIsChartLoading(true);
         setChartError(null);
         try {
-            const response = await fetch(`${API_URL}/api/chart-data`, {
+            const response = await fetch(`/api/chart-data`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -223,7 +223,7 @@ function App() {
     setSidebarInfo({ value: null, label, unit, locationName: 'Đang xác định...', lat, lng });
 
     try {
-        const response = await fetch(`${API_URL}/api/map-info`, {
+        const response = await fetch(`/api/map-info`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ time: apiDate, lat, lng, layerName })
@@ -247,20 +247,20 @@ function App() {
       const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 });
       
       const demRasterUrl = `/api/tiff-proxy/DEM_VN_3km.tif`;
-      const demLayer = new GeoRasterLayer({
-          georaster: demRasterUrl,
-          opacity: 0.7,
-          pixelValuesToColorFn: values => {
-              const dem = values[0];
-              if (dem === null || dem < 0) return null;
-              if (dem <= 200) return '#2e8b57';
-              if (dem <= 500) return '#6b8e23';
-              if (dem <= 1000) return '#b8860b';
-              if (dem <= 2000) return '#cd853f';
-              return '#a0522d';
-          },
-          resolution: 256
+      const demLayer = L.leafletGeotiff(demRasterUrl, {
+        band: 0,
+        displayMin: 0,
+        displayMax: 3000,
+        colorScale: (value) => {
+          if (value <= 0) return '#2e8b5700'; // transparent
+          if (value <= 200) return '#2e8b57';
+          if (value <= 500) return '#6b8e23';
+          if (value <= 1000) return '#b8860b';
+          if (value <= 2000) return '#cd853f';
+          return '#a0522d';
+        },
       });
+      demLayer.setOpacity(0.7);
       demLayerRef.current = demLayer;
 
       const baseMaps = { "Bản đồ nền": osmLayer };
@@ -294,7 +294,7 @@ function App() {
     const loadDataForDay = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/api/stations/${apiDate}`);
+        const response = await fetch(`/api/stations/${apiDate}`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         setAllDayData(data.stations || []);
@@ -414,29 +414,30 @@ function App() {
   useEffect(() => {
     if (!map || !layersControlRef.current) return;
 
-    const rasterUrl = `/api/tiff-proxy/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
-    
+    // Xóa layer PM2.5 cũ nếu tồn tại
     if (pm25LayerRef.current) {
         map.removeLayer(pm25LayerRef.current);
         layersControlRef.current.removeLayer(pm25LayerRef.current);
     }
     
-    const newLayer = new GeoRasterLayer({
-        georaster: rasterUrl,
-        opacity: 0.7,
-        pixelValuesToColorFn: values => {
-            const pm25 = values[0];
-            if (pm25 === null || pm25 < 0) return null;
-            if (pm25 <= 12) return '#00E400';
-            if (pm25 <= 35.4) return '#FFFF00';
-            if (pm25 <= 55.4) return '#FF7E00';
-            if (pm25 <= 150.4) return '#FF0000';
-            if (pm25 <= 250.4) return '#8F3F97';
-            return '#7E0023';
-        },
-        resolution: 256
+    const rasterUrl = `/api/tiff-proxy/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
+
+    const newLayer = L.leafletGeotiff(rasterUrl, {
+      band: 0,
+      displayMin: 0,
+      displayMax: 250,
+      colorScale: (value) => {
+          if (value < 0) return '#00E40000'; // transparent
+          if (value <= 12) return '#00E400';
+          if (value <= 35.4) return '#FFFF00';
+          if (value <= 55.4) return '#FF7E00';
+          if (value <= 150.4) return '#FF0000';
+          if (value <= 250.4) return '#8F3F97';
+          return '#7E0023';
+      },
     });
-    
+    newLayer.setOpacity(0.7);
+
     layersControlRef.current.addOverlay(newLayer, "Lớp PM2.5");
     pm25LayerRef.current = newLayer;
 
