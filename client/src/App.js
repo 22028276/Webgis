@@ -3,7 +3,10 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import 'leaflet-geotiff'; // Thư viện mới
+import 'leaflet-geotiff';
+import 'leaflet-geotiff/dist/leaflet-geotiff-plotty'; 
+import 'leaflet-geotiff/dist/leaflet-geotiff-vector-arrows';
+
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -248,11 +251,12 @@ function App() {
       
       const demRasterUrl = `/api/tiff-proxy/DEM_VN_3km.tif`;
       const demLayer = L.leafletGeotiff(demRasterUrl, {
+        renderer: new L.LeafletGeotiff.CanvasRenderer(), // THÊM DÒNG NÀY
         band: 0,
         displayMin: 0,
         displayMax: 3000,
         colorScale: (value) => {
-          if (value <= 0) return '#2e8b5700'; // transparent
+          if (value <= 0) return '#2e8b5700';
           if (value <= 200) return '#2e8b57';
           if (value <= 500) return '#6b8e23';
           if (value <= 1000) return '#b8860b';
@@ -414,7 +418,6 @@ function App() {
   useEffect(() => {
     if (!map || !layersControlRef.current) return;
 
-    // Xóa layer PM2.5 cũ nếu tồn tại
     if (pm25LayerRef.current) {
         map.removeLayer(pm25LayerRef.current);
         layersControlRef.current.removeLayer(pm25LayerRef.current);
@@ -423,11 +426,12 @@ function App() {
     const rasterUrl = `/api/tiff-proxy/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
 
     const newLayer = L.leafletGeotiff(rasterUrl, {
+      renderer: new L.LeafletGeotiff.CanvasRenderer(), // THÊM DÒNG NÀY
       band: 0,
       displayMin: 0,
       displayMax: 250,
       colorScale: (value) => {
-          if (value < 0) return '#00E40000'; // transparent
+          if (value < 0) return '#00E40000';
           if (value <= 12) return '#00E400';
           if (value <= 35.4) return '#FFFF00';
           if (value <= 55.4) return '#FF7E00';
