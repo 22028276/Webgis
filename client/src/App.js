@@ -6,7 +6,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
 
 const API_URL = '';
-
+const DATA_BUCKET_URL = 'https://f1dr8zcfoih9tkti.public.blob.vercel-storage.com'; 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -247,7 +247,7 @@ function App() {
       const newMap = L.map('map', { center: [16.46, 107.59], zoom: 6, zoomControl: false, attributionControl: false });
       const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 });
       
-      const demRasterUrl = `${API_URL}/api/raster-data?file=DEM_VN_3km.tif`;
+      const demRasterUrl = `${DATA_BUCKET_URL}/DEM_VN_3km.tif`;
       const demLayer = new GeoRasterLayer({
           georaster: demRasterUrl,
           opacity: 0.7,
@@ -415,7 +415,7 @@ function App() {
   useEffect(() => {
     if (!map || !layersControlRef.current) return;
 
-    const rasterUrl = `${API_URL}/api/raster-data?date=${apiDate}`;
+    const rasterUrl = `${DATA_BUCKET_URL}/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
     
     if (pm25LayerRef.current) {
         map.removeLayer(pm25LayerRef.current);

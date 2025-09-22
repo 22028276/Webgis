@@ -11,29 +11,6 @@ app.use(express.json());
 
 const DATA_BUCKET_URL = 'https://f1dr8zcfoih9tkti.public.blob.vercel-storage.com';
 
-app.get('/api/raster-data', async (req, res) => {
-    const { date, file } = req.query;
-    let filename;
-
-    if (file) {
-        filename = file;
-    } else if (date) {
-        filename = `PM25_${date.replace(/-/g, '')}_3km.tif`;
-    } else {
-        return res.status(400).send('Missing date or file query parameter');
-    }
-    
-    const tiffUrl = `${DATA_BUCKET_URL}/${filename}`;
-
-    try {
-        const response = await axios.get(tiffUrl, { responseType: 'stream' });
-        response.data.pipe(res);
-    } catch (error) {
-        console.error(`Không thể lấy file: ${tiffUrl}`, error.message);
-        res.status(404).send('File not found');
-    }
-});
-
 async function getValueFromTiff(lat, lng, filename) {
     const tiffUrl = `${DATA_BUCKET_URL}/${filename}`;
     try {
