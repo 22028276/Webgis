@@ -9,27 +9,45 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const DATA_BUCKET_URL = 'https://raw.githubusercontent.com/22028276/Webgis/tree/main/client/public/data';
+const DATA_BUCKET_URL = 'https://raw.githubusercontent.com/22028276/Webgis/main/client/public/data';
 
-async function getValueFromGeoTIFF(lat, lng, date) {
-    const filename = `PM25_${date.replace(/-/g, '')}_3km.tif`;
+app.get('/api/raster-data', async (req, res) => {
+    const { date, file } = req.query;
+    let filename;
+
+    if (file) {
+        filename = file;
+    } else if (date) {
+        filename = `PM25_${date.replace(/-/g, '')}_3km.tif`;
+    } else {
+        return res.status(400).send('Missing date or file query parameter');
+    }
+    
     const tiffUrl = `${DATA_BUCKET_URL}/${filename}`;
 
+    try {
+        const response = await axios.get(tiffUrl, { responseType: 'stream' });
+        response.data.pipe(res);
+    } catch (error) {
+        console.error(`Không thể lấy file: ${tiffUrl}`, error.message);
+        res.status(404).send('File not found');
+    }
+});
+
+async function getValueFromTiff(lat, lng, filename) {
+    const tiffUrl = `${DATA_BUCKET_URL}/${filename}`;
     try {
         const tiff = await geotiff.fromUrl(tiffUrl);
         const image = await tiff.getImage();
         const bbox = image.getBoundingBox();
         const width = image.getWidth();
         const height = image.getHeight();
-
         const [minLng, minLat, maxLng, maxLat] = bbox;
-        if (lng < minLng || lng > maxLng || lat < minLat || lat > maxLat) {
-            return null;
-        }
+
+        if (lng < minLng || lng > maxLng || lat < minLat || lat > maxLat) return null;
 
         const px = Math.floor(width * ((lng - minLng) / (maxLng - minLng)));
         const py = Math.floor(height * ((maxLat - lat) / (maxLat - minLat)));
-
         const data = await image.readRasters({ window: [px, py, px + 1, py + 1] });
         const value = data[0][0];
 
@@ -41,21 +59,27 @@ async function getValueFromGeoTIFF(lat, lng, date) {
 }
 
 app.post('/api/map-info', async (req, res) => {
-    const { lat, lng, time } = req.body;
+    const { lat, lng, time, layerName } = req.body;
     
     let locationName = 'Không xác định được vị trí';
     try {
         const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`;
         const geoResponse = await axios.get(geoUrl, { headers: { 'User-Agent': 'WebGIS-MoiTruong-App/1.0' } });
-        if (geoResponse.data && geoResponse.data.display_name) {
-            locationName = geoResponse.data.display_name;
-        }
+        locationName = geoResponse.data?.display_name || locationName;
     } catch (error) {
         console.error("Lỗi Reverse Geocoding:", error.message);
     }
+    
+    let filename;
+    if (layerName === 'DEM') {
+        filename = 'DEM_VN_3km.tif';
+    } else if (layerName === 'PM25') {
+        filename = `PM25_${time.replace(/-/g, '')}_3km.tif`;
+    } else {
+        return res.status(400).json({ value: null, locationName });
+    }
 
-    const value = await getValueFromGeoTIFF(lat, lng, time);
-
+    const value = await getValueFromTiff(lat, lng, filename);
     res.json({ value, locationName });
 });
 
@@ -67,8 +91,8 @@ app.post('/api/chart-data', async (req, res) => {
         const date = new Date(centerDate);
         date.setDate(centerDate.getDate() + i - 3);
         const dateString = date.toISOString().split('T')[0];
-        
-        const value = await getValueFromGeoTIFF(lat, lng, dateString);
+        const filename = `PM25_${dateString.replace(/-/g, '')}_3km.tif`;
+        const value = await getValueFromTiff(lat, lng, filename);
 
         return {
             date: date.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit' }),
