@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const DATA_BUCKET_URL = 'https://raw.githubusercontent.com/22028276/Webgis/main/client/public/data';
+const DATA_BUCKET_URL = 'https://f1dr8zcfoih9tkti.public.blob.vercel-storage.com';
 
 app.get('/api/raster-data', async (req, res) => {
     const { date, file } = req.query;
