@@ -1,52 +1,89 @@
-require('dotenv').config(); // Nạp các biến môi trường từ file .env
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const geotiff = require('geotiff');
 const allBaseStations = require('./all_stations.json');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Lấy URL của GeoServer từ biến môi trường và xây dựng URL cơ sở
-const GEOSERVER_BASE_URL = `${process.env.GEOSERVER_URL}/geoserver/air_quality/wms`;
-
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.redirect('http://localhost:3000');
+const DATA_BUCKET_URL = 'https://raw.githubusercontent.com/22028276/Webgis/main/client/public/data';
+
+async function getValueFromGeoTIFF(lat, lng, date) {
+    const filename = `PM25_${date.replace(/-/g, '')}_3km.tif`;
+    const tiffUrl = `${DATA_BUCKET_URL}/${filename}`;
+
+    try {
+        const tiff = await geotiff.fromUrl(tiffUrl);
+        const image = await tiff.getImage();
+        const bbox = image.getBoundingBox();
+        const width = image.getWidth();
+        const height = image.getHeight();
+
+        const [minLng, minLat, maxLng, maxLat] = bbox;
+        if (lng < minLng || lng > maxLng || lat < minLat || lat > maxLat) {
+            return null;
+        }
+
+        const px = Math.floor(width * ((lng - minLng) / (maxLng - minLng)));
+        const py = Math.floor(height * ((maxLat - lat) / (maxLat - minLat)));
+
+        const data = await image.readRasters({ window: [px, py, px + 1, py + 1] });
+        const value = data[0][0];
+
+        return value < -999 ? null : value;
+    } catch (error) {
+        console.error(`Không thể đọc file: ${tiffUrl}`, error.message);
+        return null;
+    }
+}
+
+app.post('/api/map-info', async (req, res) => {
+    const { lat, lng, time } = req.body;
+    
+    let locationName = 'Không xác định được vị trí';
+    try {
+        const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`;
+        const geoResponse = await axios.get(geoUrl, { headers: { 'User-Agent': 'WebGIS-MoiTruong-App/1.0' } });
+        if (geoResponse.data && geoResponse.data.display_name) {
+            locationName = geoResponse.data.display_name;
+        }
+    } catch (error) {
+        console.error("Lỗi Reverse Geocoding:", error.message);
+    }
+
+    const value = await getValueFromGeoTIFF(lat, lng, time);
+
+    res.json({ value, locationName });
 });
 
-// =================================================================
-// === ROUTE PROXY MỚI CHO GEOSERVER TILE ===
-// =================================================================
-app.get('/api/geoserver-tile', async (req, res) => {
-  try {
-    // 1. Lấy tất cả các tham số (bbox, width, height, layers...) từ request của frontend
-    const params = req.query;
+app.post('/api/chart-data', async (req, res) => {
+    const { lat, lng, centerDateStr } = req.body;
+    const centerDate = new Date(centerDateStr);
+    
+    const datePromises = Array.from({ length: 7 }, async (_, i) => {
+        const date = new Date(centerDate);
+        date.setDate(centerDate.getDate() + i - 3);
+        const dateString = date.toISOString().split('T')[0];
+        
+        const value = await getValueFromGeoTIFF(lat, lng, dateString);
 
-    // 2. Sử dụng URL cơ sở của GeoServer đã được định nghĩa
-    const geoserverUrl = GEOSERVER_BASE_URL;
-
-    // 3. Gọi đến GeoServer và yêu cầu trả về dữ liệu dạng stream (luồng)
-    const response = await axios.get(geoserverUrl, {
-      params: params, // Chuyển tiếp tất cả các tham số
-      responseType: 'stream'
+        return {
+            date: date.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit' }),
+            value: value,
+        };
     });
 
-    // 4. Thiết lập header content-type cho response trả về client
-    res.setHeader('Content-Type', response.headers['content-type']);
-
-    // 5. Chuyển thẳng (pipe) luồng dữ liệu ảnh nhận được từ GeoServer về cho frontend
-    response.data.pipe(res);
-
-  } catch (error) {
-    console.error("Lỗi proxy GeoServer:", error.message);
-    res.status(500).send("Không thể lấy dữ liệu từ GeoServer");
-  }
+    try {
+        const chartData = await Promise.all(datePromises);
+        res.json(chartData);
+    } catch (error) {
+        console.error("Lỗi lấy dữ liệu biểu đồ:", error.message);
+        res.status(500).json({ error: 'Failed to fetch chart data' });
+    }
 });
-// =================================================================
-
 
 const getDailyAverage = (pollutantArray) => {
     if (!pollutantArray || pollutantArray.length === 0) return undefined;
@@ -55,18 +92,15 @@ const getDailyAverage = (pollutantArray) => {
     const sum = validValues.reduce((a, b) => a + b, 0);
     return Math.round((sum / validValues.length) * 10) / 10;
 };
-
 app.get('/api/stations/:date', async (req, res) => {
     const { date } = req.params;
     const latitudes = allBaseStations.map(s => s.geo[0]);
     const longitudes = allBaseStations.map(s => s.geo[1]);
     const hourlyVariables = "us_aqi,pm2_5,pm10,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone";
     const apiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitudes.join(',')}&longitude=${longitudes.join(',')}&start_date=${date}&end_date=${date}&hourly=${hourlyVariables}&timezone=Asia/Bangkok`;
-
     try {
         const response = await axios.get(apiUrl);
         const data = response.data;
-
         const updatedStations = allBaseStations.map((station, index) => {
             const apiResult = data[index];
             if (!apiResult || !apiResult.hourly) {
@@ -82,13 +116,7 @@ app.get('/api/stations/:date', async (req, res) => {
                 id: station.id, name: station.name, lat: station.geo[0], lng: station.geo[1],
                 address: station.name.split('/')[1]?.trim() || 'Vietnam',
                 status: dailyMaxAqi !== null ? 'Hoạt động' : 'Bảo trì', lastUpdate: date,
-                environmentalData: {
-                    aqi: dailyMaxAqi,
-                    pm25: getDailyAverage(hourlyData.pm_5), pm10: getDailyAverage(hourlyData.pm10),
-                    co: getDailyAverage(hourlyData.carbon_monoxide), no2: getDailyAverage(hourlyData.nitrogen_dioxide),
-                    so2: getDailyAverage(hourlyData.sulphur_dioxide), o3: getDailyAverage(hourlyData.ozone),
-                    hourly: hourlyData
-                }
+                environmentalData: { aqi: dailyMaxAqi, pm25: getDailyAverage(hourlyData.pm_5), pm10: getDailyAverage(hourlyData.pm10), co: getDailyAverage(hourlyData.carbon_monoxide), no2: getDailyAverage(hourlyData.nitrogen_dioxide), so2: getDailyAverage(hourlyData.sulphur_dioxide), o3: getDailyAverage(hourlyData.ozone), hourly: hourlyData }
             };
         });
         res.json({ stations: updatedStations });
@@ -98,101 +126,4 @@ app.get('/api/stations/:date', async (req, res) => {
     }
 });
 
-
-app.post('/api/map-info', async (req, res) => {
-    const { bbox, width, height, x, y, layerName, time, lat, lng } = req.body;
-    
-    const wmsUrl = GEOSERVER_BASE_URL;
-    
-    const params = new URLSearchParams({
-        service: 'WMS', version: '1.1.1', request: 'GetFeatureInfo',
-        layers: layerName, query_layers: layerName, info_format: 'application/json',
-        feature_count: '1', srs: 'EPSG:4326', bbox, width, height, x, y,
-    });
-    if (time) params.append('time', time);
-
-    let featureInfoData;
-    try {
-        const response = await axios.get(`${wmsUrl}?${params.toString()}`);
-        featureInfoData = response.data;
-    } catch (error) {
-        console.error("Lỗi GetFeatureInfo:", error.message);
-        return res.status(error.response?.status || 500).json({ error: 'Failed to fetch from GeoServer' });
-    }
-    
-    const value = (featureInfoData.features && featureInfoData.features.length > 0)
-        ? featureInfoData.features[0].properties.GRAY_INDEX
-        : null;
-
-    let locationName = 'Không xác định được vị trí';
-    if (lat && lng) {
-        try {
-            const geoUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`;
-            const geoResponse = await axios.get(geoUrl, {
-                headers: { 'User-Agent': 'WebGIS-MoiTruong-App/1.0' }
-            });
-            if (geoResponse.data && geoResponse.data.display_name) {
-                locationName = geoResponse.data.display_name;
-            }
-        } catch (error) {
-            console.error("Lỗi Reverse Geocoding:", error.message);
-        }
-    }
-
-    res.json({
-        value: value,
-        locationName: locationName
-    });
-});
-
-
-app.post('/api/chart-data', async (req, res) => {
-    const { mapQueryInfo, centerDateStr } = req.body;
-    const centerDate = new Date(centerDateStr);
-    const dates = Array.from({ length: 7 }, (_, i) => {
-        const date = new Date(centerDate);
-        date.setDate(centerDate.getDate() + i - 3);
-        return date;
-    });
-
-    const formatDate = (date) => date.toISOString().split('T')[0];
-
-    const wmsUrl = GEOSERVER_BASE_URL;
-
-    const requests = dates.map(date => {
-        const params = new URLSearchParams({
-            service: 'WMS', version: '1.1.1', request: 'GetFeatureInfo',
-            layers: 'air_quality:imagemosaic', query_layers: 'air_quality:imagemosaic',
-            info_format: 'application/json', feature_count: '1', srs: 'EPSG:4326',
-            bbox: mapQueryInfo.bbox, width: mapQueryInfo.width, height: mapQueryInfo.height,
-            x: mapQueryInfo.x, y: mapQueryInfo.y, time: formatDate(date)
-        });
-        return axios.get(`${wmsUrl}?${params.toString()}`);
-    });
-
-    try {
-        const responses = await Promise.all(requests.map(p => p.catch(e => e)));
-        const chartData = responses.map((response, index) => {
-            if (response instanceof Error) {
-                 return {
-                    date: new Date(dates[index]).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit' }),
-                    value: null,
-                };
-            }
-            const data = response.data;
-            const value = (data.features && data.features.length > 0) ? data.features[0].properties.GRAY_INDEX : null;
-            return {
-                date: new Date(dates[index]).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit' }),
-                value: value,
-            };
-        });
-        res.json(chartData);
-    } catch (error) {
-        console.error("Lỗi lấy dữ liệu biểu đồ:", error.message);
-        res.status(500).json({ error: 'Failed to fetch chart data' });
-    }
-});
-
-app.listen(PORT, () => {
-    console.log(`Backend server đang chạy trên: http://localhost:${PORT}`);
-});
+module.exports = app;

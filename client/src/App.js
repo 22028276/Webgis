@@ -3,11 +3,11 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import GeoRasterLayer from 'georaster-layer-for-leaflet';
 
-// Frontend bây giờ chỉ cần biết URL của backend API
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = '';
+const DATA_BUCKET_URL = 'https://raw.githubusercontent.com/22028276/Webgis/main/client/public/data';
 
-// --- Sửa lỗi icon mặc định của Leaflet ---
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -15,7 +15,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-// --- Hàm tiện ích ---
 function getHeatIndexColor(val) {
   if (val <= 30) return '#43d967';
   if (val <= 34) return '#ffe066';
@@ -44,7 +43,6 @@ const getPM25HealthRecommendation = (value) => {
     return "Mức độ nguy hại. Cảnh báo khẩn cấp về sức khỏe. Mọi người tuyệt đối không ra ngoài.";
 };
 
-// --- Component InfoSidebar ---
 const InfoSidebar = ({ info, isLoading, onClose, date }) => {
   const [chartData, setChartData] = useState(null);
   const [isChartLoading, setIsChartLoading] = useState(false);
@@ -52,9 +50,9 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
   const chartQueryRef = useRef(null); 
 
   useEffect(() => {
-    const newQuery = info ? JSON.stringify(info.mapQueryInfo) : null;
+    const newQuery = info ? JSON.stringify({lat: info.lat, lng: info.lng}) : null;
     
-    if (info && info.mapQueryInfo && info.label === 'PM2.5 (Hôm nay)' && chartQueryRef.current !== newQuery) {
+    if (info && info.label === 'PM2.5 (Hôm nay)' && chartQueryRef.current !== newQuery) {
       chartQueryRef.current = newQuery;
       
       const loadChartData = async () => {
@@ -65,10 +63,10 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
                 },
                 body: JSON.stringify({
-                    mapQueryInfo: info.mapQueryInfo,
+                    lat: info.lat,
+                    lng: info.lng,
                     centerDateStr: date,
                 }),
             });
@@ -80,7 +78,7 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
             setChartData(data);
         } catch (error) {
             console.error("Lỗi khi tải dữ liệu biểu đồ:", error.message);
-            setChartError("Không thể tải dữ liệu biểu đồ. Vui lòng kiểm tra console của backend.");
+            setChartError("Không thể tải dữ liệu biểu đồ.");
             setChartData(null);
         } finally {
             setIsChartLoading(false);
@@ -137,7 +135,7 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
 
         {info.label === 'PM2.5 (Hôm nay)' && (
             <div className="chart-container">
-            <h4>7 ngày</h4>
+            <h4>Dữ liệu PM2.5 trong 7 ngày</h4>
             {isChartLoading && <p>Đang tải dữ liệu biểu đồ...</p>}
             {chartError && <p style={{ color: 'red' }}>{chartError}</p>}
             {chartData && !chartError && (
@@ -148,7 +146,7 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
                     <YAxis fontSize={12} />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="value" name="Giá trị" stroke="#8884d8" strokeWidth={2} connectNulls />
+                    <Line type="monotone" dataKey="value" name="PM2.5" stroke="#8884d8" strokeWidth={2} connectNulls />
                 </LineChart>
                 </ResponsiveContainer>
             )}
@@ -160,8 +158,6 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
   );
 };
 
-
-// --- Component chính ---
 function App() {
   const [map, setMap] = useState(null);
   const [showHealthModal, setShowHealthModal] = useState(false);
@@ -185,7 +181,6 @@ function App() {
   const mapRef = useRef(null);
   const markersRef = useRef([]);
   const pm25LayerRef = useRef(null);
-  const demLayerRef = useRef(null);
   const layersControlRef = useRef(null);
 
   const START_DATE = new Date('2023-01-01');
@@ -195,60 +190,29 @@ function App() {
 
   const handleMapClick = useCallback(async (e) => {
     if (!map) return;
-    
-    const { lat, lng } = e.latlng;
-    
-    let layerName = '';
-    let label = '';
-    let unit = '';
-    let queryParams = {};
-
-    if (map.hasLayer(demLayerRef.current)) {
-        layerName = 'air_quality:DEM_VN_3km';
-        label = 'Độ cao';
-        unit = ' m';
-    } else if (map.hasLayer(pm25LayerRef.current)) {
-        layerName = 'air_quality:imagemosaic';
-        label = 'PM2.5 (Hôm nay)';
-        unit = ' µg/m³';
-        queryParams.time = apiDate;
-    } else {
-        setSidebarInfo(null);
-        return;
+    if (!map.hasLayer(pm25LayerRef.current)) {
+      setSidebarInfo(null);
+      return;
     }
     
+    const { lat, lng } = e.latlng;
+    const label = 'PM2.5 (Hôm nay)';
+    const unit = ' µg/m³';
+    
     setIsSidebarLoading(true);
-    const mapQueryInfo = {
-        bbox: map.getBounds().toBBoxString(),
-        width: map.getSize().x,
-        height: map.getSize().y,
-        x: Math.round(e.containerPoint.x),
-        y: Math.round(e.containerPoint.y),
-    };
-
-    setSidebarInfo({ value: null, label, unit, mapQueryInfo, locationName: 'Đang xác định...', lat, lng });
+    setSidebarInfo({ value: null, label, unit, locationName: 'Đang xác định...', lat, lng });
 
     try {
         const response = await fetch(`${API_URL}/api/map-info`, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true'
-            },
-            body: JSON.stringify({ 
-                ...mapQueryInfo, 
-                layerName, 
-                time: queryParams.time,
-                lat,
-                lng
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ time: apiDate, lat, lng })
         });
         if (!response.ok) throw new Error('Backend GetFeatureInfo error');
         
         const data = await response.json();
       
         setSidebarInfo({ 
-            mapQueryInfo: mapQueryInfo,
             value: data.value, 
             locationName: data.locationName,
             label, 
@@ -259,7 +223,6 @@ function App() {
     } catch (error) {
         console.error("Lỗi khi gọi API map-info:", error);
         setSidebarInfo({ 
-            mapQueryInfo: mapQueryInfo,
             value: null, 
             locationName: 'Lỗi khi lấy dữ liệu',
             label, 
@@ -312,11 +275,7 @@ function App() {
     const loadDataForDay = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/api/stations/${apiDate}`, {
-            headers: {
-                'ngrok-skip-browser-warning': 'true'
-            }
-        });
+        const response = await fetch(`${API_URL}/api/stations/${apiDate}`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         setAllDayData(data.stations || []);
@@ -386,45 +345,36 @@ function App() {
 
   useEffect(() => {
     if (!map || !layersControlRef.current) return;
+
+    const filename = `PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
+    const rasterUrl = `${DATA_BUCKET_URL}/${filename}`;
     
-    // URL của WMS bây giờ trỏ đến endpoint proxy trên backend của bạn
-    const wmsUrl = `${API_URL}/api/geoserver-tile`;
-    
-    if (!wmsUrl || !API_URL) {
-        console.error("API_URL is not defined in your .env file!");
-        return;
-    }
-
-    const pm25LayerName = 'air_quality:imagemosaic';
-    const demLayerName = 'air_quality:DEM_VN_3km';
-
-    if (!pm25LayerRef.current) {
-        pm25LayerRef.current = L.tileLayer.wms(wmsUrl, {
-            layers: pm25LayerName,
-            format: 'image/png',
-            transparent: true,
-            opacity: 0.7,
-        });
-        layersControlRef.current.addOverlay(pm25LayerRef.current, "Lớp PM2.5 (Mosaic)");
-
-        demLayerRef.current = L.tileLayer.wms(wmsUrl, {
-            layers: demLayerName,
-            format: 'image/png',
-            transparent: true,
-            opacity: 0.7,
-        });
-        layersControlRef.current.addOverlay(demLayerRef.current, "Lớp DEM");
+    if (pm25LayerRef.current) {
+        map.removeLayer(pm25LayerRef.current);
+        layersControlRef.current.removeLayer(pm25LayerRef.current);
     }
     
-    const selectedYear = currentDateTime.getFullYear();
-    if (selectedYear === 2023 || selectedYear === 2024 || selectedYear === 2025) {
-        pm25LayerRef.current.setParams({ time: apiDate });
-    } else {
-        if (map.hasLayer(pm25LayerRef.current)) {
-            map.removeLayer(pm25LayerRef.current);
-        }
-    }
-  }, [apiDate, map, currentDateTime]); 
+    const newLayer = new GeoRasterLayer({
+        georaster: rasterUrl,
+        opacity: 0.7,
+        pixelValuesToColorFn: values => {
+            const pm25 = values[0];
+            if (pm25 === null || pm25 < 0) return null;
+            if (pm25 <= 12) return '#00E400';
+            if (pm25 <= 35.4) return '#FFFF00';
+            if (pm25 <= 55.4) return '#FF7E00';
+            if (pm25 <= 150.4) return '#FF0000';
+            if (pm25 <= 250.4) return '#8F3F97';
+            return '#7E0023';
+        },
+        resolution: 256
+    });
+    
+    newLayer.addTo(map);
+    layersControlRef.current.addOverlay(newLayer, "Lớp PM2.5");
+    pm25LayerRef.current = newLayer;
+
+  }, [apiDate, map]); 
 
   useEffect(() => {
     if (isPlaying) {
@@ -432,10 +382,8 @@ function App() {
         setCurrentDateTime(prevDateTime => {
           const newDateTime = new Date(prevDateTime);
           newDateTime.setHours(newDateTime.getHours() + 1);
-
           const finalDateTime = getToday();
           finalDateTime.setHours(23, 0, 0, 0);
-
           if (newDateTime > finalDateTime) {
             setIsPlaying(false);
             return finalDateTime;
