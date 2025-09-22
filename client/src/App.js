@@ -6,7 +6,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
 
 const API_URL = '';
-const DATA_BUCKET_URL = 'https://f1dr8zcfoih9tkti.public.blob.vercel-storage.com';
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
