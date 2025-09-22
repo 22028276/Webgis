@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const DATA_BUCKET_URL = 'https://raw.githubusercontent.com/22028276/Webgis/main/client/public/data';
+const DATA_BUCKET_URL = 'https://raw.githubusercontent.com/22028276/Webgis/tree/main/client/public/data';
 
 async function getValueFromGeoTIFF(lat, lng, date) {
     const filename = `PM25_${date.replace(/-/g, '')}_3km.tif`;

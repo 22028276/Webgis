@@ -6,7 +6,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
 
 const API_URL = '';
-const DATA_BUCKET_URL = 'https://raw.githubusercontent.com/22028276/Webgis/main/client/public/data';
+const DATA_BUCKET_URL = 'https://raw.githubusercontent.com/22028276/Webgis/tree/main/client/public/data';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
