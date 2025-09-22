@@ -43,6 +43,17 @@ const getPM25HealthRecommendation = (value) => {
     return "Mức độ nguy hại. Cảnh báo khẩn cấp về sức khỏe. Mọi người tuyệt đối không ra ngoài.";
 };
 
+const getAQILevel = (aqi) => {
+    if (aqi === 'N/A' || aqi === undefined || aqi === null) return 'Không có dữ liệu';
+    if (aqi === '-') return 'Chưa tính toán';
+    if (aqi <= 50) return 'Tốt';
+    if (aqi <= 100) return 'Trung bình';
+    if (aqi <= 150) return 'Kém';
+    if (aqi <= 200) return 'Xấu';
+    if (aqi <= 300) return 'Rất xấu';
+    return 'Nguy hại';
+};
+
 const InfoSidebar = ({ info, isLoading, onClose, date }) => {
   const [chartData, setChartData] = useState(null);
   const [isChartLoading, setIsChartLoading] = useState(false);
@@ -318,6 +329,55 @@ function App() {
     setHourlyStations(processedStations);
   }, [allDayData, selectedHour, apiDate]);
 
+  const getMarkerColor = useCallback((aqi) => {
+    if (aqi === 'N/A' || aqi === undefined || aqi === null) return '#95a5a6';
+    if (aqi === '-') return '#3498db';
+    if (aqi <= 50) return '#27ae60';
+    if (aqi <= 100) return '#f1c40f';
+    if (aqi <= 150) return '#e67e22';
+    if (aqi <= 200) return '#c0392b';
+    if (aqi <= 300) return '#8e44ad';
+    return '#78281f';
+  }, []);
+
+  const createPopupContent = useCallback((station) => {
+    const envData = station.environmentalData || {};
+    const aqi = envData.aqi ?? 'N/A';
+    const aqiLevel = getAQILevel(aqi);
+    const aqiColor = getMarkerColor(aqi);
+    const renderPollutant = (name, value, unit) => {
+      if (value === undefined || value === null) return '';
+      return `<div>${name}: <b>${value}</b> ${unit}</div>`;
+    };
+
+    return `
+      <div class="station-popup-content">
+        <h3 style="margin: 0 0 10px 0; color: #333;">${station.name}</h3>
+        <p style="margin: 5px 0; font-size: 14px; color: #666;">Trạng thái: <b style="color: ${station.status === 'Hoạt động' ? '#27ae60' : '#c0392b'}">${station.status}</b></p>
+        <div style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+          <div style="display: flex; align-items: center; margin-bottom: 10px;">
+            <div style="width: 40px; height: 40px; background-color: ${aqiColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+              <span style="color: white; font-weight: bold; font-size: 16px;">${aqi}</span>
+            </div>
+            <div>
+              <div style="font-weight: bold; color: #333;">AQI (Lúc ${String(selectedHour).padStart(2, '0')}:00)</div>
+              <div style="font-size: 14px; color: ${aqiColor}; font-weight: bold;">${aqiLevel}</div>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+            ${renderPollutant('PM2.5', envData.pm25, 'µg/m³')}
+            ${renderPollutant('PM10', envData.pm10, 'µg/m³')}
+            ${renderPollutant('O₃', envData.o3, 'µg/m³')}
+            ${renderPollutant('NO₂', envData.no2, 'µg/m³')}
+            ${renderPollutant('SO₂', envData.so2, 'µg/m³')}
+            ${renderPollutant('CO', envData.co, 'µg/m³')}
+          </div>
+        </div>
+        <p style="margin-top: 15px; font-size: 12px; color: #999;">Dữ liệu lúc: ${station.lastUpdate || 'Không có'}</p>
+      </div>
+    `;
+  }, [selectedHour, getMarkerColor]);
+
   useEffect(() => {
     if (!map) return;
     markersRef.current.forEach(marker => map.removeLayer(marker));
@@ -341,7 +401,7 @@ function App() {
         .bindPopup(createPopupContent(station), { maxWidth: 350, className: 'station-popup' });
       markersRef.current.push(marker);
     });
-  }, [map, hourlyStations]);
+  }, [map, hourlyStations, createPopupContent, getMarkerColor]); 
 
   useEffect(() => {
     if (!map || !layersControlRef.current) return;
@@ -396,66 +456,6 @@ function App() {
     }
     return () => clearInterval(intervalRef.current);
   }, [isPlaying]);
-
-  const getMarkerColor = (aqi) => {
-    if (aqi === 'N/A' || aqi === undefined || aqi === null) return '#95a5a6';
-    if (aqi === '-') return '#3498db';
-    if (aqi <= 50) return '#27ae60';
-    if (aqi <= 100) return '#f1c40f';
-    if (aqi <= 150) return '#e67e22';
-    if (aqi <= 200) return '#c0392b';
-    if (aqi <= 300) return '#8e44ad';
-    return '#78281f';
-  };
-
-  const createPopupContent = (station) => {
-    const envData = station.environmentalData || {};
-    const aqi = envData.aqi ?? 'N/A';
-    const aqiLevel = getAQILevel(aqi);
-    const aqiColor = getMarkerColor(aqi);
-    const renderPollutant = (name, value, unit) => {
-      if (value === undefined || value === null) return '';
-      return `<div>${name}: <b>${value}</b> ${unit}</div>`;
-    };
-
-    return `
-      <div class="station-popup-content">
-        <h3 style="margin: 0 0 10px 0; color: #333;">${station.name}</h3>
-        <p style="margin: 5px 0; font-size: 14px; color: #666;">Trạng thái: <b style="color: ${station.status === 'Hoạt động' ? '#27ae60' : '#c0392b'}">${station.status}</b></p>
-        <div style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-          <div style="display: flex; align-items: center; margin-bottom: 10px;">
-            <div style="width: 40px; height: 40px; background-color: ${aqiColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
-              <span style="color: white; font-weight: bold; font-size: 16px;">${aqi}</span>
-            </div>
-            <div>
-              <div style="font-weight: bold; color: #333;">AQI (Lúc ${String(selectedHour).padStart(2, '0')}:00)</div>
-              <div style="font-size: 14px; color: ${aqiColor}; font-weight: bold;">${aqiLevel}</div>
-            </div>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
-            ${renderPollutant('PM2.5', envData.pm25, 'µg/m³')}
-            ${renderPollutant('PM10', envData.pm10, 'µg/m³')}
-            ${renderPollutant('O₃', envData.o3, 'µg/m³')}
-            ${renderPollutant('NO₂', envData.no2, 'µg/m³')}
-            ${renderPollutant('SO₂', envData.so2, 'µg/m³')}
-            ${renderPollutant('CO', envData.co, 'µg/m³')}
-          </div>
-        </div>
-        <p style="margin-top: 15px; font-size: 12px; color: #999;">Dữ liệu lúc: ${station.lastUpdate || 'Không có'}</p>
-      </div>
-    `;
-  };
-
-  const getAQILevel = (aqi) => {
-    if (aqi === 'N/A' || aqi === undefined || aqi === null) return 'Không có dữ liệu';
-    if (aqi === '-') return 'Chưa tính toán';
-    if (aqi <= 50) return 'Tốt';
-    if (aqi <= 100) return 'Trung bình';
-    if (aqi <= 150) return 'Kém';
-    if (aqi <= 200) return 'Xấu';
-    if (aqi <= 300) return 'Rất xấu';
-    return 'Nguy hại';
-  };
 
   const zoomToStation = (station) => {
     if (map) {
