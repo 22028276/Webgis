@@ -3,10 +3,10 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import parseGeoraster from 'georaster';
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
 
-
+const API_URL = '';
+const DATA_BUCKET_URL = 'https://f1dr8zcfoih9tkti.public.blob.vercel-storage.com'; 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -52,14 +52,12 @@ const getAQILevel = (aqi) => {
     if (aqi <= 300) return 'Rất xấu';
     return 'Nguy hại';
 };
-// --- Hết phần các hàm tiện ích ---
-
 
 const InfoSidebar = ({ info, isLoading, onClose, date }) => {
   const [chartData, setChartData] = useState(null);
   const [isChartLoading, setIsChartLoading] = useState(false);
   const [chartError, setChartError] = useState(null);
-  const chartQueryRef = useRef(null);
+  const chartQueryRef = useRef(null); 
 
   useEffect(() => {
     const newQuery = info ? JSON.stringify({lat: info.lat, lng: info.lng}) : null;
@@ -69,11 +67,11 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
       
       const loadChartData = async () => {
         setIsChartLoading(true);
-        setChartError(null);
+        setChartError(null); 
         try {
-            const response = await fetch(`/api/chart-data`, {
+            const response = await fetch(`${API_URL}/api/chart-data`, {
                 method: 'POST',
-                headers: {
+                headers: { 
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -195,12 +193,9 @@ function App() {
   const pm25LayerRef = useRef(null);
   const demLayerRef = useRef(null);
   const layersControlRef = useRef(null);
-  // ** NEW STATE ** to track active layer for click handler
-  const [activeRasterLayer, setActiveRasterLayer] = useState('DEM');
-
 
   const START_DATE = new Date('2023-01-01');
-  const LATEST_DATE = getToday();
+  const LATEST_DATE = getToday(); 
   const apiDate = formatDate(currentDateTime);
   const selectedHour = currentDateTime.getHours();
 
@@ -212,12 +207,11 @@ function App() {
     let unit = '';
     let layerName = '';
 
-    // ** MODIFIED ** to use state instead of map.hasLayer
-    if (activeRasterLayer === 'PM25') {
+    if (map.hasLayer(pm25LayerRef.current)) {
         label = 'PM2.5';
         unit = ' µg/m³';
         layerName = 'PM25';
-    } else if (activeRasterLayer === 'DEM') {
+    } else if (map.hasLayer(demLayerRef.current)) {
         label = 'Độ cao';
         unit = ' m';
         layerName = 'DEM';
@@ -230,7 +224,7 @@ function App() {
     setSidebarInfo({ value: null, label, unit, locationName: 'Đang xác định...', lat, lng });
 
     try {
-        const response = await fetch(`/api/map-info`, {
+        const response = await fetch(`${API_URL}/api/map-info`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ time: apiDate, lat, lng, layerName })
@@ -246,63 +240,48 @@ function App() {
     } finally {
         setIsSidebarLoading(false);
     }
-  }, [map, apiDate, activeRasterLayer]); // Added activeRasterLayer dependency
+  }, [map, apiDate]);
 
-  // ==================================================================
-  // ** REWRITTEN ** useEffect for map initialization
-  // ==================================================================
   useEffect(() => {
     if (!mapRef.current) {
       const newMap = L.map('map', { center: [16.46, 107.59], zoom: 6, zoomControl: false, attributionControl: false });
       const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 });
-      osmLayer.addTo(newMap);
+      
+      const demRasterUrl = `${DATA_BUCKET_URL}/DEM_VN_3km.tif`;
+      const demLayer = new GeoRasterLayer({
+          georaster: demRasterUrl,
+          opacity: 0.7,
+          pixelValuesToColorFn: values => {
+              const dem = values[0];
+              if (dem === null || dem < 0) return null;
+              if (dem <= 200) return '#2e8b57';
+              if (dem <= 500) return '#6b8e23';
+              if (dem <= 1000) return '#b8860b';
+              if (dem <= 2000) return '#cd853f';
+              return '#a0522d';
+          },
+          resolution: 256
+      });
+      demLayerRef.current = demLayer;
 
       const baseMaps = { "Bản đồ nền": osmLayer };
-      const overlayMaps = {};
+      const overlayMaps = { "Lớp DEM": demLayer };
       const control = L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(newMap);
-      layersControlRef.current = control;
       
-      const demRasterUrl = `/api/tiff-proxy/DEM_VN_3km.tif`;
-
-      parseGeoraster(demRasterUrl).then(georaster => {
-          const demLayer = new GeoRasterLayer({
-              georaster: georaster,
-              opacity: 0.7,
-              pixelValuesToColorFn: values => {
-                  const value = values[0]; // Get value from the first band
-                  if (value <= 0) return '#2e8b5700'; // transparent
-                  if (value <= 200) return '#2e8b57';
-                  if (value <= 500) return '#6b8e23';
-                  if (value <= 1000) return '#b8860b';
-                  if (value <= 2000) return '#cd853f';
-                  return '#a0522d';
-              },
-              resolution: 256,
-          });
-          demLayer.addTo(newMap);
-          demLayerRef.current = demLayer;
-          control.addOverlay(demLayer, "Lớp DEM");
-      }).catch(err => console.error("Lỗi khi xử lý file DEM TIF:", err));
-
+      layersControlRef.current = control;
+      osmLayer.addTo(newMap);
       L.control.zoom({ position: 'topright' }).addTo(newMap);
       L.control.attribution({ position: 'bottomright' }).addTo(newMap);
-      
-      newMap.on('overlayadd', (e) => {
-        if (e.name === 'Lớp PM2.5') setActiveRasterLayer('PM25');
-        if (e.name === 'Lớp DEM') setActiveRasterLayer('DEM');
-      });
-
       setMap(newMap);
       mapRef.current = newMap;
     }
-
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
     };
-  }, []); // Empty dependency array, runs only once
+  }, []);
 
   useEffect(() => {
     if (!map) return;
@@ -316,7 +295,7 @@ function App() {
     const loadDataForDay = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/stations/${apiDate}`);
+        const response = await fetch(`${API_URL}/api/stations/${apiDate}`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         setAllDayData(data.stations || []);
@@ -431,53 +410,38 @@ function App() {
         .bindPopup(createPopupContent(station), { maxWidth: 350, className: 'station-popup' });
       markersRef.current.push(marker);
     });
-  }, [map, hourlyStations, createPopupContent, getMarkerColor]);
+  }, [map, hourlyStations, createPopupContent, getMarkerColor]); 
 
-  // ==================================================================
-  // ** REWRITTEN ** useEffect for PM2.5 layer updates
-  // ==================================================================
   useEffect(() => {
     if (!map || !layersControlRef.current) return;
 
-    // Remove the old PM2.5 layer if it exists
+    const rasterUrl = `${DATA_BUCKET_URL}/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
+    
     if (pm25LayerRef.current) {
         map.removeLayer(pm25LayerRef.current);
         layersControlRef.current.removeLayer(pm25LayerRef.current);
-        pm25LayerRef.current = null;
     }
     
-    const rasterUrl = `/api/tiff-proxy/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
+    const newLayer = new GeoRasterLayer({
+        georaster: rasterUrl,
+        opacity: 0.7,
+        pixelValuesToColorFn: values => {
+            const pm25 = values[0];
+            if (pm25 === null || pm25 < 0) return null;
+            if (pm25 <= 12) return '#00E400';
+            if (pm25 <= 35.4) return '#FFFF00';
+            if (pm25 <= 55.4) return '#FF7E00';
+            if (pm25 <= 150.4) return '#FF0000';
+            if (pm25 <= 250.4) return '#8F3F97';
+            return '#7E0023';
+        },
+        resolution: 256
+    });
+    
+    layersControlRef.current.addOverlay(newLayer, "Lớp PM2.5");
+    pm25LayerRef.current = newLayer;
 
-    parseGeoraster(rasterUrl).then(georaster => {
-        const newLayer = new GeoRasterLayer({
-            georaster: georaster,
-            opacity: 0.7,
-            pixelValuesToColorFn: values => {
-                const value = values[0];
-                if (value < 0) return null; // transparent
-                if (value <= 12) return '#00E400';
-                if (value <= 35.4) return '#FFFF00';
-                if (value <= 55.4) return '#FF7E00';
-                if (value <= 150.4) return '#FF0000';
-                if (value <= 250.4) return '#8F3F97';
-                return '#7E0023';
-            },
-            resolution: 256,
-        });
-
-        // Add to map and control
-        layersControlRef.current.addOverlay(newLayer, "Lớp PM2.5");
-        pm25LayerRef.current = newLayer;
-
-        // Optional: automatically turn on the layer if it was the active one
-        if (activeRasterLayer === 'PM25') {
-            newLayer.addTo(map);
-        }
-
-    }).catch(err => console.error(`Không thể tải lớp PM2.5 cho ngày ${apiDate}:`, err));
-
-  }, [apiDate, map, activeRasterLayer]); // Re-run when date or map changes
-
+  }, [apiDate, map]); 
 
   useEffect(() => {
     if (isPlaying) {
@@ -603,9 +567,9 @@ function App() {
 
       <div id="map" className="map-container"></div>
       
-      <InfoSidebar
-        info={sidebarInfo}
-        isLoading={isSidebarLoading}
+      <InfoSidebar 
+        info={sidebarInfo} 
+        isLoading={isSidebarLoading} 
         onClose={() => setSidebarInfo(null)}
         date={apiDate}
       />
