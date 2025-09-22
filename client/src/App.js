@@ -4,8 +4,6 @@ import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import 'leaflet-geotiff';
-import 'leaflet-geotiff/dist/leaflet-geotiff-plotty'; 
-import 'leaflet-geotiff/dist/leaflet-geotiff-vector-arrows';
 
 
 
