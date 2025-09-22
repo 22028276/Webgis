@@ -6,7 +6,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
 
 const API_URL = '';
-const DATA_BUCKET_URL = 'https://f1dr8zcfoih9tkti.public.blob.vercel-storage.com'; 
+const DATA_BUCKET_URL = 'https://f1dr8zcfoih9tkti.public.blob.vercel-storage.com';
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -57,7 +57,7 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
   const [chartData, setChartData] = useState(null);
   const [isChartLoading, setIsChartLoading] = useState(false);
   const [chartError, setChartError] = useState(null);
-  const chartQueryRef = useRef(null); 
+  const chartQueryRef = useRef(null);
 
   useEffect(() => {
     const newQuery = info ? JSON.stringify({lat: info.lat, lng: info.lng}) : null;
@@ -67,11 +67,11 @@ const InfoSidebar = ({ info, isLoading, onClose, date }) => {
       
       const loadChartData = async () => {
         setIsChartLoading(true);
-        setChartError(null); 
+        setChartError(null);
         try {
             const response = await fetch(`${API_URL}/api/chart-data`, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -195,7 +195,7 @@ function App() {
   const layersControlRef = useRef(null);
 
   const START_DATE = new Date('2023-01-01');
-  const LATEST_DATE = getToday(); 
+  const LATEST_DATE = getToday();
   const apiDate = formatDate(currentDateTime);
   const selectedHour = currentDateTime.getHours();
 
@@ -247,7 +247,7 @@ function App() {
       const newMap = L.map('map', { center: [16.46, 107.59], zoom: 6, zoomControl: false, attributionControl: false });
       const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 });
       
-      const demRasterUrl = `${DATA_BUCKET_URL}/DEM_VN_3km.tif`;
+      const demRasterUrl = `/api/tiff-proxy/DEM_VN_3km.tif`;
       const demLayer = new GeoRasterLayer({
           georaster: demRasterUrl,
           opacity: 0.7,
@@ -410,12 +410,12 @@ function App() {
         .bindPopup(createPopupContent(station), { maxWidth: 350, className: 'station-popup' });
       markersRef.current.push(marker);
     });
-  }, [map, hourlyStations, createPopupContent, getMarkerColor]); 
+  }, [map, hourlyStations, createPopupContent, getMarkerColor]);
 
   useEffect(() => {
     if (!map || !layersControlRef.current) return;
 
-    const rasterUrl = `${DATA_BUCKET_URL}/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
+    const rasterUrl = `/api/tiff-proxy/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
     
     if (pm25LayerRef.current) {
         map.removeLayer(pm25LayerRef.current);
@@ -441,7 +441,7 @@ function App() {
     layersControlRef.current.addOverlay(newLayer, "Lớp PM2.5");
     pm25LayerRef.current = newLayer;
 
-  }, [apiDate, map]); 
+  }, [apiDate, map]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -567,9 +567,9 @@ function App() {
 
       <div id="map" className="map-container"></div>
       
-      <InfoSidebar 
-        info={sidebarInfo} 
-        isLoading={isSidebarLoading} 
+      <InfoSidebar
+        info={sidebarInfo}
+        isLoading={isSidebarLoading}
         onClose={() => setSidebarInfo(null)}
         date={apiDate}
       />

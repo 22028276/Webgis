@@ -127,4 +127,34 @@ app.get('/api/stations/:date', async (req, res) => {
     }
 });
 
+app.get('/api/tiff-proxy/:filename(*)', async (req, res) => {
+    const { filename } = req.params;
+    if (!filename.endsWith('.tif')) {
+        return res.status(400).send('Invalid file type requested');
+    }
+
+    const tiffUrl = `${DATA_BUCKET_URL}/${filename}`;
+    console.log(`Proxying TIFF request for: ${tiffUrl}`);
+
+    try {
+        const response = await axios({
+            method: 'get',
+            url: tiffUrl,
+            responseType: 'stream'
+        });
+
+        res.setHeader('Content-Type', 'image/tiff');
+        
+        response.data.pipe(res);
+
+    } catch (error) {
+        console.error(`Lỗi khi proxy file TIFF: ${tiffUrl}`, error.message);
+        if (error.response) {
+             res.status(error.response.status).send(error.response.statusText);
+        } else {
+             res.status(500).send('Không thể lấy file TIFF từ storage');
+        }
+    }
+});
+
 module.exports = app;
