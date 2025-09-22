@@ -22,7 +22,7 @@
       "destination": "/server/server.js"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/|static/).*)",
       "destination": "/client/index.html"
     }
   ]
