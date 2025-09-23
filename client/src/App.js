@@ -202,37 +202,44 @@ function App() {
 
   const handleMapClick = useCallback(async (e) => {
     if (!map) return;
-    
-    const { lat, lng } = e.latlng;
-    let label = '';
-    let unit = '';
-    let layerName = '';
-    let isClickable = false;
 
+    const { lat, lng } = e.latlng;
+    let layerToQuery = null;
     if (map.hasLayer(pm25LayerRef.current)) {
-        label = 'PM2.5';
-        unit = ' µg/m³';
-        layerName = 'PM25';
-        isClickable = true;
+        layerToQuery = {
+            name: 'PM25',
+            label: 'PM2.5',
+            unit: ' µg/m³',
+            useDate: true,
+        };
     } else if (map.hasLayer(demLayerRef.current)) {
-        label = 'Độ cao';
-        unit = ' m';
-        layerName = 'DEM';
-        isClickable = true;
-    } else {
-      setSidebarInfo(null);
-      return;
+        layerToQuery = {
+            name: 'DEM',
+            label: 'Độ cao',
+            unit: ' m',
+            useDate: false,
+        };
     }
-    
-    if (!isClickable) return;
-    
+
+    if (!layerToQuery) {
+        setSidebarInfo(null);
+        return;
+    }
+
     setIsSidebarLoading(true);
-    setSidebarInfo({ value: null, label, unit, locationName: 'Đang xác định...', lat, lng });
+    setSidebarInfo({ 
+        value: null, 
+        label: layerToQuery.label, 
+        unit: layerToQuery.unit, 
+        locationName: 'Đang xác định...', 
+        lat, 
+        lng 
+    });
 
     try {
-        const payload = { lat, lng, layerName };
+        const payload = { lat, lng, layerName: layerToQuery.name };
         
-        if (layerName === 'PM25') {
+        if (layerToQuery.useDate) {
             payload.time = apiDate;
         }
 
@@ -241,14 +248,31 @@ function App() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        if (!response.ok) throw new Error('Backend error');
+
+        if (!response.ok) {
+            throw new Error('Lỗi từ backend khi lấy dữ liệu điểm');
+        }
         
         const data = await response.json();
       
-        setSidebarInfo({ value: data.value, locationName: data.locationName, label, unit, lat, lng });
+        setSidebarInfo({ 
+            value: data.value, 
+            locationName: data.locationName, 
+            label: layerToQuery.label, 
+            unit: layerToQuery.unit, 
+            lat, 
+            lng 
+        });
     } catch (error) {
         console.error("Lỗi khi gọi API map-info:", error);
-        setSidebarInfo({ value: null, locationName: 'Lỗi khi lấy dữ liệu', label, unit, lat, lng });
+        setSidebarInfo({ 
+            value: null, 
+            locationName: 'Lỗi khi lấy dữ liệu', 
+            label: layerToQuery.label, 
+            unit: layerToQuery.unit, 
+            lat, 
+            lng 
+        });
     } finally {
         setIsSidebarLoading(false);
     }
@@ -462,12 +486,12 @@ function App() {
               pixelValuesToColorFn: values => {
                   const pm25 = values[0];
                   if (pm25 === null || pm25 < 0) return null;
-                  if (pm25 <= 12.0) return '#009966';  // Good
-                  if (pm25 <= 35.4) return '#FFDE33';  // Moderate
-                  if (pm25 <= 55.4) return '#FF9933';  // Unhealthy for Sensitive
-                  if (pm25 <= 150.4) return '#CC0033'; // Unhealthy
-                  if (pm25 <= 250.4) return '#660099'; // Very Unhealthy
-                  return '#7E0023';                     // Hazardous
+                  if (pm25 <= 12.0) return '#009966';
+                  if (pm25 <= 35.4) return '#FFDE33';
+                  if (pm25 <= 55.4) return '#FF9933';
+                  if (pm25 <= 150.4) return '#CC0033';
+                  if (pm25 <= 250.4) return '#660099';
+                  return '#7E0023';
               },
               resolution: 256
           });
