@@ -277,12 +277,9 @@ function App() {
           const demLayer = new GeoRasterLayer({
             georaster,
             opacity: 0.7,
-            // --- CHANGED START ---
-            // Cập nhật dải màu cho lớp DEM theo yêu cầu
             pixelValuesToColorFn: values => {
               const dem = values[0];
-              if (dem === null) return null;
-              if (dem < 0) return '#0055ff';    // Water
+              if (dem === null || dem < 0) return null;
               if (dem <= 0) return '#2d7823';
               if (dem <= 100) return '#6a9e3f';
               if (dem <= 200) return '#a6c15b';
@@ -295,9 +292,8 @@ function App() {
               if (dem <= 2000) return '#8b4a1b';
               if (dem <= 2500) return '#743c15';
               if (dem <= 3000) return '#c7bba5';
-              return '#ffffff'; // Peaks
+              return '#ffffff';
             },
-            // --- CHANGED END ---
             resolution: 256
           });
           demLayer.addTo(newMap);
@@ -463,8 +459,6 @@ function App() {
           const newLayer = new GeoRasterLayer({
               georaster,
               opacity: 0.7,
-              // --- CHANGED START ---
-              // Cập nhật dải màu cho lớp PM2.5 theo yêu cầu
               pixelValuesToColorFn: values => {
                   const pm25 = values[0];
                   if (pm25 === null || pm25 < 0) return null;
@@ -475,7 +469,6 @@ function App() {
                   if (pm25 <= 250.4) return '#660099'; // Very Unhealthy
                   return '#7E0023';                     // Hazardous
               },
-              // --- CHANGED END ---
               resolution: 256
           });
           
