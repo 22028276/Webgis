@@ -200,8 +200,6 @@ function App() {
   const apiDate = formatDate(currentDateTime);
   const selectedHour = currentDateTime.getHours();
 
-  // --- CHANGED START ---
-  // Sửa đổi logic xử lý khi nhấp chuột vào bản đồ
   const handleMapClick = useCallback(async (e) => {
     if (!map) return;
     
@@ -211,7 +209,6 @@ function App() {
     let layerName = '';
     let isClickable = false;
 
-    // Ưu tiên lớp PM2.5 nếu cả hai lớp đều có trên bản đồ
     if (map.hasLayer(pm25LayerRef.current)) {
         label = 'PM2.5';
         unit = ' µg/m³';
@@ -233,14 +230,11 @@ function App() {
     setSidebarInfo({ value: null, label, unit, locationName: 'Đang xác định...', lat, lng });
 
     try {
-        // Xây dựng payload một cách linh hoạt
         const payload = { lat, lng, layerName };
         
-        // Chỉ thêm 'time' vào payload nếu lớp đang được nhấp là PM25
         if (layerName === 'PM25') {
             payload.time = apiDate;
         }
-        // Đối với lớp DEM, không cần gửi 'time', backend sẽ tự hiểu
 
         const response = await fetch(`${API_URL}/api/map-info`, {
             method: 'POST',
@@ -259,7 +253,6 @@ function App() {
         setIsSidebarLoading(false);
     }
   }, [map, apiDate]);
-  // --- CHANGED END ---
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -276,7 +269,6 @@ function App() {
       setMap(newMap);
       mapRef.current = newMap;
 
-      // load DEM raster
       const demRasterUrl = `${DATA_BUCKET_URL}/DEM_VN_3km.tif`;
       fetch(demRasterUrl)
         .then(r => r.arrayBuffer())
@@ -285,15 +277,27 @@ function App() {
           const demLayer = new GeoRasterLayer({
             georaster,
             opacity: 0.7,
+            // --- CHANGED START ---
+            // Cập nhật dải màu cho lớp DEM theo yêu cầu
             pixelValuesToColorFn: values => {
               const dem = values[0];
-              if (dem === null || dem < 0) return null;
-              if (dem <= 200) return '#2E8B57';
-              if (dem <= 500) return '#6B8E23';
-              if (dem <= 1000) return '#B8860B';
-              if (dem <= 2000) return '#CD853F';
-              return '#A0522D';
+              if (dem === null) return null;
+              if (dem < 0) return '#0055ff';    // Water
+              if (dem <= 0) return '#2d7823';
+              if (dem <= 100) return '#6a9e3f';
+              if (dem <= 200) return '#a6c15b';
+              if (dem <= 400) return '#f3eda2';
+              if (dem <= 600) return '#e4c767';
+              if (dem <= 800) return '#d2a63f';
+              if (dem <= 1000) return '#c48a36';
+              if (dem <= 1200) return '#b3732c';
+              if (dem <= 1500) return '#a15d22';
+              if (dem <= 2000) return '#8b4a1b';
+              if (dem <= 2500) return '#743c15';
+              if (dem <= 3000) return '#c7bba5';
+              return '#ffffff'; // Peaks
             },
+            // --- CHANGED END ---
             resolution: 256
           });
           demLayer.addTo(newMap);
@@ -438,12 +442,9 @@ function App() {
     });
   }, [map, hourlyStations, createPopupContent, getMarkerColor]); 
 
-  // --- CHANGED START ---
-  // Sửa đổi logic tải và hiển thị lớp PM2.5
   useEffect(() => {
     if (!map || !layersControlRef.current) return;
     
-    // Luôn xóa lớp PM2.5 cũ khi ngày thay đổi
     if (pm25LayerRef.current) {
         map.removeLayer(pm25LayerRef.current);
         layersControlRef.current.removeLayer(pm25LayerRef.current);
@@ -452,7 +453,6 @@ function App() {
     
     const selectedYear = currentDateTime.getFullYear();
     
-    // Chỉ tải và hiển thị lớp PM2.5 nếu năm được chọn là 2023
     if (selectedYear === 2023) {
       const rasterUrl = `${DATA_BUCKET_URL}/PM25_${apiDate.replace(/-/g, '')}_3km.tif`;
       
@@ -463,21 +463,23 @@ function App() {
           const newLayer = new GeoRasterLayer({
               georaster,
               opacity: 0.7,
-              // Chuẩn hóa màu sắc theo thang đo AQI của US EPA
+              // --- CHANGED START ---
+              // Cập nhật dải màu cho lớp PM2.5 theo yêu cầu
               pixelValuesToColorFn: values => {
                   const pm25 = values[0];
                   if (pm25 === null || pm25 < 0) return null;
-                  if (pm25 <= 12.0) return '#00E400';  // Tốt (Good)
-                  if (pm25 <= 35.4) return '#FFFF00';  // Trung bình (Moderate)
-                  if (pm25 <= 55.4) return '#FF7E00';  // Kém (Unhealthy for Sensitive Groups)
-                  if (pm25 <= 150.4) return '#FF0000'; // Xấu (Unhealthy)
-                  if (pm25 <= 250.4) return '#8F3F97'; // Rất xấu (Very Unhealthy)
-                  return '#7E0023';                     // Nguy hại (Hazardous)
+                  if (pm25 <= 12.0) return '#009966';  // Good
+                  if (pm25 <= 35.4) return '#FFDE33';  // Moderate
+                  if (pm25 <= 55.4) return '#FF9933';  // Unhealthy for Sensitive
+                  if (pm25 <= 150.4) return '#CC0033'; // Unhealthy
+                  if (pm25 <= 250.4) return '#660099'; // Very Unhealthy
+                  return '#7E0023';                     // Hazardous
               },
+              // --- CHANGED END ---
               resolution: 256
           });
           
-          newLayer.addTo(map); // Thêm lớp mới vào bản đồ
+          newLayer.addTo(map);
           layersControlRef.current.addOverlay(newLayer, "Lớp PM2.5");
           pm25LayerRef.current = newLayer;
         })
@@ -485,8 +487,7 @@ function App() {
           console.log(`Không tìm thấy hoặc không thể tải tệp raster cho ngày ${apiDate}:`, error);
         });
     }
-  }, [apiDate, map, currentDateTime]); 
-  // --- CHANGED END ---
+  }, [apiDate, map, currentDateTime]);
 
   useEffect(() => {
     if (isPlaying) {
