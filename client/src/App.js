@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
+import parseGeoraster from 'georaster';
 
 const API_URL = '';
 const DATA_BUCKET_URL = 'https://f1dr8zcfoih9tkti.public.blob.vercel-storage.com'; 
@@ -247,26 +248,8 @@ function App() {
       const newMap = L.map('map', { center: [16.46, 107.59], zoom: 6, zoomControl: false, attributionControl: false });
       const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 });
       
-      const demRasterUrl = `${DATA_BUCKET_URL}/DEM_VN_3km.tif`;
-      const demLayer = new GeoRasterLayer({
-          georaster: demRasterUrl,
-          opacity: 0.7,
-          pixelValuesToColorFn: values => {
-              const dem = values[0];
-              if (dem === null || dem < 0) return null;
-              if (dem <= 200) return '#2e8b57';
-              if (dem <= 500) return '#6b8e23';
-              if (dem <= 1000) return '#b8860b';
-              if (dem <= 2000) return '#cd853f';
-              return '#a0522d';
-          },
-          resolution: 256
-      });
-      demLayerRef.current = demLayer;
-
       const baseMaps = { "Bản đồ nền": osmLayer };
-      const overlayMaps = { "Lớp DEM": demLayer };
-      const control = L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(newMap);
+      const control = L.control.layers(baseMaps, {}, { position: 'topright' }).addTo(newMap);
       
       layersControlRef.current = control;
       osmLayer.addTo(newMap);
@@ -274,6 +257,31 @@ function App() {
       L.control.attribution({ position: 'bottomright' }).addTo(newMap);
       setMap(newMap);
       mapRef.current = newMap;
+
+      // load DEM raster
+      const demRasterUrl = `${DATA_BUCKET_URL}/DEM_VN_3km.tif`;
+      fetch(demRasterUrl)
+        .then(r => r.arrayBuffer())
+        .then(ab => parseGeoraster(ab))
+        .then(georaster => {
+          const demLayer = new GeoRasterLayer({
+            georaster,
+            opacity: 0.7,
+            pixelValuesToColorFn: values => {
+              const dem = values[0];
+              if (dem === null || dem < 0) return null;
+              if (dem <= 200) return '#2e8b57';
+              if (dem <= 500) return '#6b8e23';
+              if (dem <= 1000) return '#b8860b';
+              if (dem <= 2000) return '#cd853f';
+              return '#a0522d';
+            },
+            resolution: 256
+          });
+          demLayer.addTo(newMap);
+          layersControlRef.current.addOverlay(demLayer, "Lớp DEM");
+          demLayerRef.current = demLayer;
+        });
     }
     return () => {
       if (mapRef.current) {
@@ -422,25 +430,29 @@ function App() {
         layersControlRef.current.removeLayer(pm25LayerRef.current);
     }
     
-    const newLayer = new GeoRasterLayer({
-        georaster: rasterUrl,
-        opacity: 0.7,
-        pixelValuesToColorFn: values => {
-            const pm25 = values[0];
-            if (pm25 === null || pm25 < 0) return null;
-            if (pm25 <= 12) return '#00E400';
-            if (pm25 <= 35.4) return '#FFFF00';
-            if (pm25 <= 55.4) return '#FF7E00';
-            if (pm25 <= 150.4) return '#FF0000';
-            if (pm25 <= 250.4) return '#8F3F97';
-            return '#7E0023';
-        },
-        resolution: 256
-    });
-    
-    layersControlRef.current.addOverlay(newLayer, "Lớp PM2.5");
-    pm25LayerRef.current = newLayer;
-
+    fetch(rasterUrl)
+      .then(r => r.arrayBuffer())
+      .then(ab => parseGeoraster(ab))
+      .then(georaster => {
+        const newLayer = new GeoRasterLayer({
+            georaster,
+            opacity: 0.7,
+            pixelValuesToColorFn: values => {
+                const pm25 = values[0];
+                if (pm25 === null || pm25 < 0) return null;
+                if (pm25 <= 12) return '#00E400';
+                if (pm25 <= 35.4) return '#FFFF00';
+                if (pm25 <= 55.4) return '#FF7E00';
+                if (pm25 <= 150.4) return '#FF0000';
+                if (pm25 <= 250.4) return '#8F3F97';
+                return '#7E0023';
+            },
+            resolution: 256
+        });
+        
+        layersControlRef.current.addOverlay(newLayer, "Lớp PM2.5");
+        pm25LayerRef.current = newLayer;
+      });
   }, [apiDate, map]); 
 
   useEffect(() => {
