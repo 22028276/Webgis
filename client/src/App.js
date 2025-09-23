@@ -205,14 +205,16 @@ function App() {
 
     const { lat, lng } = e.latlng;
     let layerToQuery = null;
-    if (map.hasLayer(pm25LayerRef.current)) {
+
+
+    if (pm25LayerRef.current && map.hasLayer(pm25LayerRef.current)) {
         layerToQuery = {
             name: 'PM25',
             label: 'PM2.5',
             unit: ' µg/m³',
             useDate: true,
         };
-    } else if (map.hasLayer(demLayerRef.current)) {
+    } else if (demLayerRef.current && map.hasLayer(demLayerRef.current)) {
         layerToQuery = {
             name: 'DEM',
             label: 'Độ cao',
@@ -220,6 +222,7 @@ function App() {
             useDate: false,
         };
     }
+   
 
     if (!layerToQuery) {
         setSidebarInfo(null);
@@ -320,7 +323,7 @@ function App() {
             },
             resolution: 256
           });
-          demLayer.addTo(newMap);
+
           layersControlRef.current.addOverlay(demLayer, "Lớp DEM");
           demLayerRef.current = demLayer;
         });
@@ -496,7 +499,7 @@ function App() {
               resolution: 256
           });
           
-          newLayer.addTo(map);
+
           layersControlRef.current.addOverlay(newLayer, "Lớp PM2.5");
           pm25LayerRef.current = newLayer;
         })
